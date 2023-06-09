@@ -23,4 +23,4 @@ local function candoaltattack(inst, doer, target, actions, right)
     end
 end
 
-AddComponentAction("EQUIPPED", "combatalternativeattack", candoaltattack)
+AddComponentAction("EQUIPPED", "combatalternateattack", candoaltattack)
