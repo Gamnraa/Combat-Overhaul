@@ -1,6 +1,5 @@
-local CombatAlternateAttack = Class(function(self, inst, type)
+local CombatAlternateAttack = Class(function(self, inst)
     self.inst = inst
-    if type then self.inst:SetTag(type) end
 
  end,
  nil
