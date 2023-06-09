@@ -1,4 +1,4 @@
-require "gramutil.lua"
+require "gramutil"
 
 AddPrefabPostInit("axe", function(inst)
     inst:AddComponent("combatalternateattack")
