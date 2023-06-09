@@ -1,4 +1,5 @@
 modimport "scripts/throwableaxeadditions"
+modimport "scripts/piercingadditions"
 
 local State = GLOBAL.State
 local FRAMES = GLOBAL.FRAMES
@@ -15,10 +16,16 @@ local THROW_AXE = AddAction("THROW_AXE", "Throw Axe", function(act)
 end
 )
 
+local PIERCE = AddAction("PIERCE", "Piercing Attack", function(act)
+    act.doer.components.talker:Say("Be mine!")
+end
+)
 local function candoaltattack(inst, doer, target, actions, right)
     if right and doer.replica.combat and doer.replica.combat:CanTarget(target) and target.replica.combat:CanBeAttacked() then
         if inst:HasTag("throwableaxe") then
             table.insert(actions, GLOBAL.ACTIONS.THROW_AXE)
+        elseif inst:HasTag("piercing") then
+            table.insert(actions, GLOBAL.ACTIONS.PIERCE)
         end
     end
 end
