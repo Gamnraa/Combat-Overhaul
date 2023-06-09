@@ -1,4 +1,4 @@
-modimport "scripts/axethrowableadditions"
+modimport "scripts/throwableaxeadditions"
 
 local State = GLOBAL.State
 local FRAMES = GLOBAL.FRAMES
