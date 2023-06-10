@@ -6,7 +6,7 @@ local ImageButton = require "widgets/imagebutton"
 
 local AlternateAttackInputChanger = Class(Screen, function(self, inst)
     self.inst = inst
-    self.buttonconfig = GLOBAL.KEY_V
+    self.buttonconfig = KEY_V
 
     self.buttonopener = self:AddChild(ImageButton("images/global.xml", "square.tex"))
     self.buttonopener:SetVAnchor(ANCHOR_BOTTOM)
