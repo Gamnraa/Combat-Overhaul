@@ -15,6 +15,7 @@ local CommonHandlers = GLOBAL.CommonHandlers
 local STRINGS = GLOBAL.STRINGS
 local TUNING = GLOBAL.TUNING
 local ActionHandler = GLOBAL.ActionHandler
+local TheInput = GLOBAL.TheInput
 
 local THROW_AXE = AddAction("THROW_AXE", "Throw Axe", function(act)
     act.doer.componets.talker:Say("Happy Labor Day!")
@@ -113,3 +114,11 @@ local function candoaltattack(inst, doer, target, actions, right)
 end
 
 AddComponentAction("EQUIPPED", "combatalternateattack", candoaltattack)
+
+
+
+local altattackchanger = require "screens/alternateattackinputchanger"
+AddClassPostConstruct("screens/playerhud", function()
+    self.owner.alterattackchanger = self:AddChild(altattackchanger(self.owner))
+end
+)
