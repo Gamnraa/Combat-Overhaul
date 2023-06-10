@@ -1,6 +1,6 @@
 modimport "scripts/throwableaxeadditions"
 modimport "scripts/piercingadditions"
-modimport "scripts/heavyblunt"
+modimport "scripts/strongbluntaddtions"
 modimport "scripts/weakadditions"
 modimport "scripts/thrustadditions"
 modimport "scripts/swordadditions"
