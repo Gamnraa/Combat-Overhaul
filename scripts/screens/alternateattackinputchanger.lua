@@ -8,12 +8,14 @@ local AlternateAttackInputChanger = Class(Screen, function(self, inst)
     self.inst = inst
     self.buttonconfig = KEY_V
 
+    Screen._ctor(self, "alternateattackinputchanger")
+
     self.buttonopener = self:AddChild(ImageButton("images/global.xml", "square.tex"))
     self.buttonopener:SetVAnchor(ANCHOR_BOTTOM)
     self.buttonopener:SetHAnchor(ANCHOR_LEFT)
     self.buttonopener:SetScale(.8)
     self.buttonopner:SetOnClick(function() self:DoInit() end)    
-    Screen._ctor(self, "alternateattackinputchanger")
+    
 end
 )
 
