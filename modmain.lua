@@ -18,38 +18,79 @@ local ActionHandler = GLOBAL.ActionHandler
 
 local THROW_AXE = AddAction("THROW_AXE", "Throw Axe", function(act)
     act.doer.componets.talker:Say("Happy Labor Day!")
+    act.doer.components.combat:DoAttack(act.target)
+    return true
 end
 )
+AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.THROW_AXE, "attack"))
+AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.THROW_AXE, "attack"))
+
+
 
 local PIERCE = AddAction("PIERCE", "Piercing Attack", function(act)
     act.doer.components.talker:Say("Be mine!")
+    act.doer.components.combat:DoAttack(act.target)
+    return true
 end
 )
+AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.PIERCE, "attack"))
+AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.PIERCE, "attack"))
+
+
 
 local HEAVY_SWING = AddAction("HEAVY_SWING", "Heavy Swing", function(act)
     act.doer.componets.talker:Say("Let's get into the swing of things!")
+    act.doer.components.combat:DoAttack(act.target)
+    return true
 end
 )
+AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.HEAVY_SWING, "attack"))
+AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.HEAVY_SWING, "attack"))
+
+
 
 local POWER_SWING = AddAction("POWER_SWING", "Power Swing", function(act)
     act.doer.components.talker:Say("It's all in the technique!")
+    act.doer.components.combat:DoAttack(act.target)
+    return true
 end
 )
+AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.POWER_SWING, "attack"))
+AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.POWER_SWING, "attack"))
+
+
+
 --NOTE: Might want to change this one to Point Action
 local SPEAR_CHARGE = AddAction("SPEAR_CHARGE", "Spear Charge", function(act)
     act.doer.componets.talker:Say("Chaaaarge!!")
+    act.doer.components.combat:DoAttack(act.target)
+    return true
 end
 )
+AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.SPEAR_CHARGE, "attack"))
+AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.SPEAR_CHARGE, "attack"))
+
+
 
 local RAPID_SLASH = AddAction("RAPID_SLASH", "Rapid Slash", function(act)
     act.doer.components.talker:Say("A flurry of blows!")
+    act.doer.components.combat:DoAttack(act.target)
+    return true
 end
 )
+AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.RAPID_SLASH, "attack"))
+AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.RAPID_SLASH, "attack"))
 
-local POWER_WHIP = AddAction("POWER_WHIP", "Throw Axe", function(act)
-    act.doer.componets.talker:Say("Let's whip you into shap!")
+
+
+local POWER_WHIP = AddAction("POWER_WHIP", "Power Whip", function(act)
+    act.doer.componets.talker:Say("Let's whip you into shape!")
+    act.doer.components.combat:DoAttack(act.target)
+    return true
 end
 )
+AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.POWER_WHIP, "attack"))
+AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.POWER_WHIP, "attack"))
 
 local function candoaltattack(inst, doer, target, actions, right)
     if right and doer.replica.combat and doer.replica.combat:CanTarget(target) and target.replica.combat:CanBeAttacked() then
