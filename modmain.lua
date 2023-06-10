@@ -118,7 +118,7 @@ AddComponentAction("EQUIPPED", "combatalternateattack", candoaltattack)
 
 
 local altattackchanger = require "screens/alternateattackinputchanger"
-AddClassPostConstruct("screens/playerhud", function()
+AddClassPostConstruct("screens/playerhud", function(self)
     self.owner.alterattackchanger = self:AddChild(altattackchanger(self.owner))
 end
 )
