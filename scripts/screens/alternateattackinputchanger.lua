@@ -14,7 +14,7 @@ local AlternateAttackInputChanger = Class(Screen, function(self, inst)
     self.buttonopener:SetVAnchor(ANCHOR_BOTTOM)
     self.buttonopener:SetHAnchor(ANCHOR_LEFT)
     self.buttonopener:SetScale(.8)
-    self.buttonopner:SetOnClick(function() self:DoInit() end)    
+    self.buttonopener:SetOnClick(function() self:DoInit() end)    
     
 end
 )
