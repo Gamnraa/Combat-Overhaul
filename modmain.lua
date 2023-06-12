@@ -144,6 +144,6 @@ AddClassPostConstruct("widgets/statusdisplays", function(self)
     self.altattackbutton = self:AddChild(ImageButton("images/global.xml", "spear.tex"))
     self.altattackbutton:SetVAnchor(GLOBAL.ANCHOR_BOTTOM)
     self.altattackbutton:SetHAnchor(GLOBAL.ANCHOR_LEFT)
-    self.altattackbutton:SetOnClick(function() self.owner:ShowPopup(POPUPS.ALT_ATTACK_CHANGER))
+    self.altattackbutton:SetOnClick(function() self.owner:ShowPopup(POPUPS.ALT_ATTACK_CHANGER) end)
 end
 )
