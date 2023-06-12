@@ -4,58 +4,45 @@ local Text = require "widgets/text"
 local ImageButton = require "widgets/imagebutton"
 
 
-local AlternateAttackInputChanger = Class(Screen, function(self, inst)
-    self.inst = inst
-    self.listenforkeys = false
-    self.buttonconfig = KEY_V
+local AlternateAttackInputChanger = Class(Screen, function(self, owner)
+    self.owner = owner
+    Screen._ctor(self, "AlternateAttackInputChanger")
 
-    Screen._ctor(self, "alternateattackinputchanger")
+	--darken everything behind the dialog
+    self.black = self:AddChild(Image("images/global.xml", "square.tex"))
+    self.black:SetVRegPoint(ANCHOR_MIDDLE)
+    self.black:SetHRegPoint(ANCHOR_MIDDLE)
+    self.black:SetVAnchor(ANCHOR_MIDDLE)
+    self.black:SetHAnchor(ANCHOR_MIDDLE)
+    self.black:SetScaleMode(SCALEMODE_FILLSCREEN)
+	self.black:SetTint(0,0,0,.75)
 
-    self.buttonopener = self:AddChild(ImageButton("images/global.xml", "square.tex"))
-    self.buttonopener:SetVAnchor(ANCHOR_BOTTOM)
-    self.buttonopener:SetHAnchor(ANCHOR_LEFT)
-    self.buttonopener:SetScale(.8)
-    self.buttonopener:SetOnClick(function() self:DoInit() end)
-    
-    self.bgfade = self:AddChild(Image("images/global.xml", "square.text"))
-    self.bgfade:SetVRegPoint(ANCHOR_MIDDLE)
-    self.bgfade:SetHRegPoint(ANCHOR_MIDDLE)
-    self.bgfade:SetVAnchor(ANCHOR_MIDDLE)
-    self.bgfade:SetHAnchor(ANCHOR_MIDDLE)
-    self.bgfade:SetScaleMode(SCALEMODE_FILLSCREEN)
-    self.bgfade:SetTint(0, 0, 0, 0)
-    
-end
-)
+    self.prompt = self.black:AddChild(Text(BODYTEXTFONT, 44, "Press any key to set your Special Attack input:", UICOLOURS.WHITE))
+    self.prompt:SetPosition(0, 50)
+end)
 
-function AlternateAttackInputChanger:DoInit()
-    self.bgfade:SetTint(0, 0, 0, .75)
-
-    self.prompt =  self:AddChild(Text(BODYTEXTFONT, 50, "Press any key to set your Special Attack input:", UICOLOURS.WHITE))
-    self.prompt:SetVAnchor(ANCHOR_MIDDLE)
-    self.prompt:SetHAnchor(ANCHOR_MIDDLE)
-
-    self.listenforkeys = true
+function AlternateAttackInputChanger:OnDestroy()
+    POPUPS.ALT_ATTACK_CHANGER:Close(self.owner)
+    AlternateAttackInputChanger._base.OnDestroy(self)
 end
 
-function AlternateAttackInputChanger:OnClose()
-    print("OnClose")
-    local screen = TheFrontEnd:GetActiveScreen()
-    if screen and not screen.name:find("HUD") then
-        TheFrontEnd:PopScreen()
-    end
-    self.listenforkeys = false
-    TheFrontEnd:GetSound():PlaySound("donstarve/HUD/click_move")
+function AlternateAttackInputChanger:OnBecomeInactive()
+    AlternateAttackInputChanger._base.OnBecomeInactive(self)
+end
+
+function AlternateAttackInputChanger:OnBecomeActive()
+    AlternateAttackInputChanger._base.OnBecomeActive(self)
 end
 
 function AlternateAttackInputChanger:OnRawKey(key, down)
-    print("rawkey")
-    if down and self.listenforkeys then
-        --In the future we might want to check and make sure the key pressed is not assigned to another control
-        self.buttonconfig = key
-        self:OnClose()
+    print(key)
+    if down then
+        self.owner.altattack = key
+        TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
+        TheFrontEnd:PopScreen()
         return true
     end
+    return false
 end
 
 return AlternateAttackInputChanger
