@@ -16,6 +16,8 @@ local STRINGS = GLOBAL.STRINGS
 local TUNING = GLOBAL.TUNING
 local ActionHandler = GLOBAL.ActionHandler
 local TheInput = GLOBAL.TheInput
+local TheFrontEnd = GLOBAL.TheFrontEnd
+local POPUPS = GLOBAL.POPUPS
 
 local THROW_AXE = AddAction("THROW_AXE", "Throw Axe", function(act)
     act.doer.componets.talker:Say("Happy Labor Day!")
@@ -115,10 +117,33 @@ end
 
 AddComponentAction("EQUIPPED", "combatalternateattack", candoaltattack)
 
-
-
 local altattackchanger = require "screens/alternateattackinputchanger"
+
+AddPopup("ALT_ATTACK_CHANGER")
+POPUPS.ALT_ATTACK_CHANGER.fn = function(inst, show)
+    local function OpenScreen()
+        if inst.HUD then
+            inst.HUD.altattackchanger = altattackchanger(inst)
+            return true
+        end
+    end
+
+    if inst.HUD then
+        if not show and inst.HUD.altattackchanger and inst.HUD.altattackchanger:IsValid() then
+            TheFrontEnd:PopScreen(inst.HUD.altattackchanger)
+            inst.HUD.altattackchanger = nil
+        elseif not OpenScreen() then
+            POPUPS.ALT_ATTACK_CHANGER:Close(inst)
+        end
+    end
+end
+
+local ImageButton = require "widgets/imagebutton"
+--local altattackchanger = require "screens/alternateattackinputchanger"
 AddClassPostConstruct("widgets/statusdisplays", function(self)
-    self.owner.alterattackchanger = self:AddChild(altattackchanger(self.owner))
+    self.altattackbutton = self:AddChild(ImageButton("images/global.xml", "spear.tex"))
+    self.altattackbutton:SetVAnchor(GLOBAL.ANCHOR_BOTTOM)
+    self.altattackbutton:SetHAnchor(GLOBAL.ANCHOR_LEFT)
+    self.altattackbutton:SetOnClick(function() self.owner:ShowPopup(POPUPS.ALT_ATTACK_CHANGER))
 end
 )
