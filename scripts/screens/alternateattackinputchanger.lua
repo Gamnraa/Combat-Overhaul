@@ -17,8 +17,9 @@ local AlternateAttackInputChanger = Class(Screen, function(self, owner)
     self.black:SetScaleMode(SCALEMODE_FILLSCREEN)
 	self.black:SetTint(0,0,0,.75)
 
-    self.prompt = self.black:AddChild(Text(BODYTEXTFONT, 44, "Press any key to set your Special Attack input:", UICOLOURS.WHITE))
-    self.prompt:SetPosition(0, 50)
+    self.prompt = self:AddChild(Text(BODYTEXTFONT, 44, "Press any key to set your Special Attack input:", UICOLOURS.WHITE))
+    self.prompt:SetVAnchor(ANCHOR_MIDDLE)
+    self.prompt:SetHAnchor(ANCHOR_MIDDLE)
 end)
 
 function AlternateAttackInputChanger:OnDestroy()
