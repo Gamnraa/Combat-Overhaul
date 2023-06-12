@@ -119,31 +119,12 @@ AddComponentAction("EQUIPPED", "combatalternateattack", candoaltattack)
 
 local altattackchanger = require "screens/alternateattackinputchanger"
 
-AddPopup("ALT_ATTACK_CHANGER")
-POPUPS.ALT_ATTACK_CHANGER.fn = function(inst, show)
-    local function OpenScreen()
-        if inst.HUD then
-            inst.HUD.altattackchanger = altattackchanger(inst)
-            return true
-        end
-    end
-
-    if inst.HUD then
-        if not show and inst.HUD.altattackchanger and inst.HUD.altattackchanger:IsValid() then
-            TheFrontEnd:PopScreen(inst.HUD.altattackchanger)
-            inst.HUD.altattackchanger = nil
-        elseif not OpenScreen() then
-            POPUPS.ALT_ATTACK_CHANGER:Close(inst)
-        end
-    end
-end
-
 local ImageButton = require "widgets/imagebutton"
 --local altattackchanger = require "screens/alternateattackinputchanger"
 AddClassPostConstruct("widgets/statusdisplays", function(self)
     self.altattackbutton = self:AddChild(ImageButton("images/global.xml", "square.tex"))
     self.altattackbutton:SetVAnchor(GLOBAL.ANCHOR_BOTTOM)
     self.altattackbutton:SetHAnchor(GLOBAL.ANCHOR_LEFT)
-    self.altattackbutton:SetOnClick(function() self.owner:ShowPopUp(POPUPS.ALT_ATTACK_CHANGER) end)
+    self.altattackbutton:SetOnClick(function() GLOBAL.TheFrontEnd:PushScreen(altattackchanger(self.owner)) end)
 end
 )

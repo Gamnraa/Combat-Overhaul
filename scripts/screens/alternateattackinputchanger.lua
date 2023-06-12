@@ -37,6 +37,7 @@ function AlternateAttackInputChanger:OnBecomeInactive()
 end
 
 function AlternateAttackInputChanger:OnBecomeActive()
+    print("OnBecomeActive")
     AlternateAttackInputChanger._base.OnBecomeActive(self)
     self.black:SetFocus()
     TheFrontEnd:LockFocus(true)
