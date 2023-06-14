@@ -6,6 +6,7 @@ local ImageButton = require "widgets/imagebutton"
 
 local AlternateAttackInputChanger = Class(Screen, function(self, owner)
     self.owner = owner
+    self.owner.altattack = KEY_V
     self.iskeycontrol = false
     Screen._ctor(self, "AlternateAttackInputChanger")
 
