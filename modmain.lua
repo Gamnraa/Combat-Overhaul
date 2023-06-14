@@ -130,7 +130,7 @@ end
 
 AddSimPostInit(function()
     TheInput:AddKeyHandler(function(key, down)
-        if down and ThePlayer.altattack == key then
+        if down and GLOBAL.ThePlayer.altattack == key then
             print("Player alternate attack")
         end
     end
