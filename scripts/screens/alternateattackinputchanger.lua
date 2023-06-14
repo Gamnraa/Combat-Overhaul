@@ -6,6 +6,7 @@ local ImageButton = require "widgets/imagebutton"
 
 local AlternateAttackInputChanger = Class(Screen, function(self, owner)
     self.owner = owner
+    self.iskeycontrol = false
     Screen._ctor(self, "AlternateAttackInputChanger")
 
 	--darken everything behind the dialog
@@ -28,7 +29,6 @@ local AlternateAttackInputChanger = Class(Screen, function(self, owner)
 end)
 
 function AlternateAttackInputChanger:OnDestroy()
-    POPUPS.ALT_ATTACK_CHANGER:Close(self.owner)
     AlternateAttackInputChanger._base.OnDestroy(self)
 end
 
@@ -37,7 +37,6 @@ function AlternateAttackInputChanger:OnBecomeInactive()
 end
 
 function AlternateAttackInputChanger:OnBecomeActive()
-    print("OnBecomeActive")
     AlternateAttackInputChanger._base.OnBecomeActive(self)
     self.black:SetFocus()
     TheFrontEnd:LockFocus(true)
@@ -45,16 +44,18 @@ end
 
 function AlternateAttackInputChanger:OnControl(control, down)
     print(control)
+    self.iskeycontrol = true
 end
 
 function AlternateAttackInputChanger:OnRawKey(key, down)
     print(key)
-    if down then
+    if down and not self.iskeycontrol then
         self.owner.altattack = key
         TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
         TheFrontEnd:PopScreen()
         return true
     end
+    self.iskeycontrol = false
     return false
 end
 
