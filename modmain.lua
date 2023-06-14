@@ -116,8 +116,12 @@ end
 
 AddComponentAction("EQUIPPED", "combatalternateattack", candoaltattack)
 
-local altattackchanger = require "screens/alternateattackinputchanger"
+AddPlayerPostInit(function(inst)
+    inst.altattack = GLOBAL.KEY_V
+end
+)
 
+local altattackchanger = require "screens/alternateattackinputchanger"
 local ImageButton = require "widgets/imagebutton"
 --local altattackchanger = require "screens/alternateattackinputchanger"
 AddClassPostConstruct("widgets/statusdisplays", function(self)
