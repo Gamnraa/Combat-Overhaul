@@ -17,7 +17,6 @@ local TUNING = GLOBAL.TUNING
 local ActionHandler = GLOBAL.ActionHandler
 local TheInput = GLOBAL.TheInput
 local TheFrontEnd = GLOBAL.TheFrontEnd
-local POPUPS = GLOBAL.POPUPS
 
 local THROW_AXE = AddAction("THROW_AXE", "Throw Axe", function(act)
     act.doer.componets.talker:Say("Happy Labor Day!")
@@ -126,5 +125,15 @@ AddClassPostConstruct("widgets/statusdisplays", function(self)
     self.altattackbutton:SetVAnchor(GLOBAL.ANCHOR_BOTTOM)
     self.altattackbutton:SetHAnchor(GLOBAL.ANCHOR_LEFT)
     self.altattackbutton:SetOnClick(function() GLOBAL.TheFrontEnd:PushScreen(altattackchanger(self.owner)) end)
+end
+)
+
+AddSimPostInit(function()
+    TheInput:AddKeyHandler(function(key, down)
+        if down and ThePlayer.altattack == key then
+            print("Player alternate attack")
+        end
+    end
+    )
 end
 )
