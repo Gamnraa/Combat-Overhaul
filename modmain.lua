@@ -17,9 +17,11 @@ local TUNING = GLOBAL.TUNING
 local ActionHandler = GLOBAL.ActionHandler
 local TheInput = GLOBAL.TheInput
 local TheFrontEnd = GLOBAL.TheFrontEnd
+local ThePlayer = GLOBAL.ThePlayer
+local TheWorld = GLOBAL.TheWorld
 
 local THROW_AXE = AddAction("THROW_AXE", "Throw Axe", function(act)
-    act.doer.componets.talker:Say("Happy Labor Day!")
+    act.doer.components.talker:Say("Happy Labor Day!")
     act.doer.components.combat:DoAttack(act.target)
     return true
 end
@@ -136,6 +138,11 @@ AddSimPostInit(function()
     TheInput:AddKeyHandler(function(key, down)
         if down and GLOBAL.ThePlayer.altattack == key then
             print("Player alternate attack")
+            if GLOBAL.TheWorld.ismastersim then
+                GLOBAL.BufferedAction(GLOBAL.ThePlayer, GLOBAL.ThePlayer, GLOBAL.ACTIONS.THROW_AXE):Do()
+            else
+                --SendModRPCToServer
+            end
         end
     end
     )
