@@ -135,13 +135,27 @@ end
 )
 
 AddSimPostInit(function()
+    local function IsTargetHostile(inst, target)
+        if inst.HostileTest then return inst:HostileTest(target) end
+        if target.HostileToPlayerTest then return target:HostileToPlayerTest(inst) end
+        return target:HasTag("hostile")
+    end
+
+    local function CanAttack(inst, target)
+        return IsTargetHostile(inst, target) and target.replica.combat and inst.replica.combat:CanTarget(target)
+    end
+
     TheInput:AddKeyHandler(function(key, down)
+        local theplayer = GLOBAL.ThePlayer
         if down and GLOBAL.ThePlayer.altattack == key then
             print("Player alternate attack")
+            local target = GLOBAL.FindEntity(inst, 3)
+            if target and IsTargetHostile(theplayer, target) and CanAttack(inst, target) then
             if GLOBAL.TheWorld.ismastersim then
-                GLOBAL.BufferedAction(GLOBAL.ThePlayer, GLOBAL.ThePlayer, GLOBAL.ACTIONS.THROW_AXE):Do()
-            else
-                --SendModRPCToServer
+                    GLOBAL.BufferedAction(GLOBAL.ThePlayer, target, GLOBAL.ACTIONS.THROW_AXE):Do()
+                else
+                    --SendModRPCToServer
+                end
             end
         end
     end
