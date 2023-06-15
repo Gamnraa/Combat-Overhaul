@@ -148,9 +148,12 @@ AddSimPostInit(function()
     TheInput:AddKeyHandler(function(key, down)
         local theplayer = GLOBAL.ThePlayer
         if down and GLOBAL.ThePlayer.altattack == key then
+            local target = GLOBAL.FindEntity(theplayer, 3)
+            print(target)
             print("Player alternate attack")
-            local target = GLOBAL.FindEntity(inst, 3)
-            if target and IsTargetHostile(theplayer, target) and CanAttack(inst, target) then
+            print(IsTargetHostile(theplayer, target))
+            print(CanAttack(theplayer, target))
+            if target and IsTargetHostile(theplayer, target) and CanAttack(theplayer, target) then
             if GLOBAL.TheWorld.ismastersim then
                     GLOBAL.BufferedAction(GLOBAL.ThePlayer, target, GLOBAL.ACTIONS.THROW_AXE):Do()
                 else
