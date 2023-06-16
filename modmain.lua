@@ -135,6 +135,7 @@ end
 )
 
 AddSimPostInit(function()
+
     local function IsTargetHostile(inst, target)
         if inst.HostileTest then return inst:HostileTest(target) end
         if target.HostileToPlayerTest then return target:HostileToPlayerTest(inst) end
@@ -142,20 +143,18 @@ AddSimPostInit(function()
     end
 
     local function CanAttack(inst, target)
-        return IsTargetHostile(inst, target) and target.replica.combat and inst.replica.combat:CanTarget(target)
+        return IsTargetHostile(inst, target) and target.replica.combat and inst.replica.combat:CanTarget(target) and not inst.replica.combat:InCooldown()
     end
 
     TheInput:AddKeyHandler(function(key, down)
         local theplayer = GLOBAL.ThePlayer
-        if down and GLOBAL.ThePlayer.altattack == key then
-            local target = GLOBAL.FindEntity(theplayer, 3, function(target) return theplayer.replica.combat:CanTarget(target) end, nil, {"wall"})
+        if down and GLOBAL.theplayer.altattack == key then
+            local target = GLOBAL.FindEntity(theplayer, 10, function(target) return CanAttack(theplayer, target) end, nil, {"wall"})
             print(target)
-            print("Player alternate attack")
-            --print(IsTargetHostile(theplayer, target))
-            --print(CanAttack(theplayer, target))
-            if target and IsTargetHostile(theplayer, target) and CanAttack(theplayer, target) then
+            if target then
             if GLOBAL.TheWorld.ismastersim then
-                    GLOBAL.BufferedAction(GLOBAL.ThePlayer, target, GLOBAL.ACTIONS.THROW_AXE):Do()
+                    local act = GLOBAL.BufferedAction(theplayer, target, GLOBAL.ACTIONS.THROW_AXE)
+                    theplayer.components.playercontroller:DoAction(act)
                 else
                     --SendModRPCToServer
                 end
