@@ -162,13 +162,12 @@ AddSimPostInit(function()
             local target = GLOBAL.FindEntity(theplayer, 10, function(target) return CanAttack(theplayer, target) end, nil, {"wall"})
             print(target)
             if target then
+                theplayer.replica.combat:SetTarget(target)
                 if GLOBAL.TheWorld.ismastersim then
                     local act = GLOBAL.BufferedAction(theplayer, target, GLOBAL.ACTIONS.THROW_AXE)
                     theplayer.components.playercontroller:DoAction(act)
                 else
-                    theplayer.nextcombattarget = target
-                    SendModRPCToServer(GetModRPC("gramcombatRPC", "gramcombat"), "throwableaxe")
-                    --theplayer.nextcombattarget = nil
+                    theplayer:DoTaskInTime(.1, function() SendModRPCToServer(GetModRPC("gramcombatRPC", "gramcombat"), "throwableaxe") end)
                 end
             end
         end
@@ -178,7 +177,7 @@ end
 )
 
 AddModRPCHandler("gramcombatRPC", "gramcombat", function(player, weapontype) 
-    local act = GLOBAL.BufferedAction(player, player.nextcombattarget, ALT_ATTACKS[weapontype])
+    local act = GLOBAL.BufferedAction(player, player.components.combat.target, ALT_ATTACKS[weapontype])
     player.components.playercontroller:DoAction(act) 
 end
 )
