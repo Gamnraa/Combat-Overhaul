@@ -144,31 +144,34 @@ AddClassPostConstruct("widgets/statusdisplays", function(self)
 end
 )
 
-AddSimPostInit(function()
 
+
+function TryToPerformAltAttack(player, weapontype, range)
     local function IsTargetHostile(inst, target)
         if inst.HostileTest then return inst:HostileTest(target) end
         if target.HostileToPlayerTest then return target:HostileToPlayerTest(inst) end
         return target:HasTag("hostile")
     end
-
+    
     local function CanAttack(inst, target)
         return IsTargetHostile(inst, target) and target.replica.combat and inst.replica.combat:CanTarget(target) and not inst.replica.combat:InCooldown()
     end
 
+    local target = GLOBAL.FindEntity(player, range, function(target) return CanAttack(player, target) end, nil, {"wall"})
+    if target then
+        local act = GLOBAL.BufferedAction(player, target, ALT_ATTACKS[weapontype])
+        player.components.playercontroller:DoAction(act)
+    end
+end
+
+AddSimPostInit(function()
     TheInput:AddKeyHandler(function(key, down)
         local theplayer = GLOBAL.ThePlayer
         if down and theplayer.altattack == key then
-            local target = GLOBAL.FindEntity(theplayer, 10, function(target) return CanAttack(theplayer, target) end, nil, {"wall"})
-            print(target)
-            if target then
-                theplayer.replica.combat:SetTarget(target)
-                if GLOBAL.TheWorld.ismastersim then
-                    local act = GLOBAL.BufferedAction(theplayer, target, GLOBAL.ACTIONS.THROW_AXE)
-                    theplayer.components.playercontroller:DoAction(act)
-                else
-                    theplayer:DoTaskInTime(.1, function() SendModRPCToServer(GetModRPC("gramcombatRPC", "gramcombat"), "throwableaxe") end)
-                end
+            if GLOBAL.TheWorld.ismastersim then
+                TryToPerformAltAttack(theplayer, "throwableaxe", 10)
+            else
+                SendModRPCToServer(GetModRPC("gramcombatRPC", "gramcombat"), "throwableaxe", 10)
             end
         end
     end
@@ -176,8 +179,4 @@ AddSimPostInit(function()
 end
 )
 
-AddModRPCHandler("gramcombatRPC", "gramcombat", function(player, weapontype) 
-    local act = GLOBAL.BufferedAction(player, player.components.combat.target, ALT_ATTACKS[weapontype])
-    player.components.playercontroller:DoAction(act) 
-end
-)
+AddModRPCHandler("gramcombatRPC", "gramcombat", TryToPerformAltAttack)
