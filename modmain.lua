@@ -118,6 +118,16 @@ end
 
 AddComponentAction("EQUIPPED", "combatalternateattack", candoaltattack)
 
+ALT_ATTACKS = {
+    ["throwableaxe"]    = GLOBAL.ACTIONS.THROW_AXE,
+    ["piercing"]        = GLOBAL.ACTIONS.PIERCE,
+    ["strongblunt"]     = GLOBAL.ACTIONS.HEAVY_SWING,
+    ["weakblunt"]       = GLOBAL.ACTIONS.POWER_SWING,
+    ["thrust"]          = GLOBAL.ACTIONS.SPEAR_CHARGE,
+    ["sword"]           = GLOBAL.ACTIONS.RAPID_SLASH,
+    ["whip"]            = GLOBAL.ACTIONS.POWER_WHIP
+}
+
 AddPlayerPostInit(function(inst)
     inst.altattack = GLOBAL.KEY_V
 end
@@ -148,19 +158,27 @@ AddSimPostInit(function()
 
     TheInput:AddKeyHandler(function(key, down)
         local theplayer = GLOBAL.ThePlayer
-        if down and GLOBAL.theplayer.altattack == key then
+        if down and theplayer.altattack == key then
             local target = GLOBAL.FindEntity(theplayer, 10, function(target) return CanAttack(theplayer, target) end, nil, {"wall"})
             print(target)
             if target then
-            if GLOBAL.TheWorld.ismastersim then
+                if GLOBAL.TheWorld.ismastersim then
                     local act = GLOBAL.BufferedAction(theplayer, target, GLOBAL.ACTIONS.THROW_AXE)
                     theplayer.components.playercontroller:DoAction(act)
                 else
-                    --SendModRPCToServer
+                    theplayer.nextcombattarget = target
+                    SendModRPCToServer(GetModRPC("gramcombatRPC", "gramcombat"), "throwableaxe")
+                    --theplayer.nextcombattarget = nil
                 end
             end
         end
     end
     )
+end
+)
+
+AddModRPCHandler("gramcombatRPC", "gramcombat", function(player, weapontype) 
+    local act = GLOBAL.BufferedAction(player, player.nextcombattarget, ALT_ATTACKS[weapontype])
+    player.components.playercontroller:DoAction(act) 
 end
 )
