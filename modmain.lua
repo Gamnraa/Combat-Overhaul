@@ -178,10 +178,31 @@ AddSimPostInit(function()
     TheInput:AddKeyHandler(function(key, down)
         local theplayer = GLOBAL.ThePlayer
         if down and theplayer.altattack == key then
+            local weapon = theplayer.replica.combat:GetWeapon()
+            if not weapon then return end
+            if not weapon:HasTag("altattack") then return end
+
+            local attack = ""
+            if weapon:HasTag("throwableaxe") then
+                attack = "throwableaxe"
+            elseif weapon:HasTag("piercing") then
+                attack = "piercing"
+            elseif weapon:HasTag("strongblunt") then
+                attack = "strongblunt"
+            elseif weapon:HasTag("weakblunt") then
+                attack = "weakblunt"
+            elseif weapon:HasTag("thrust") then
+                attack = "thrust"
+            elseif weapon:HasTag("sword") then
+                attack = "sword"
+            elseif weapon:HasTag("whip") then
+                attack = "whip"
+            end
+
             if GLOBAL.TheWorld.ismastersim then
-                TryToPerformAltAttack(theplayer, "throwableaxe", 10)
+                TryToPerformAltAttack(theplayer, attack, 10)
             else
-                SendModRPCToServer(GetModRPC("gramcombatRPC", "gramcombat"), "throwableaxe", 10)
+                SendModRPCToServer(GetModRPC("gramcombatRPC", "gramcombat"), attack, 10)
             end
         end
     end
