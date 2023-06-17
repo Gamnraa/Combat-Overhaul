@@ -135,12 +135,20 @@ end
 
 local altattackchanger = require "screens/alternateattackinputchanger"
 local ImageButton = require "widgets/imagebutton"
+local Text = require "widgets/text"
 --local altattackchanger = require "screens/alternateattackinputchanger"
 AddClassPostConstruct("widgets/statusdisplays", function(self)
     self.altattackbutton = self:AddChild(ImageButton("images/global.xml", "square.tex"))
     self.altattackbutton:SetVAnchor(GLOBAL.ANCHOR_BOTTOM)
     self.altattackbutton:SetHAnchor(GLOBAL.ANCHOR_LEFT)
+    self.altattackbutton:SetScale(.667)
+    self.altattackbutton:SetPosition(30, 55)
     self.altattackbutton:SetOnClick(function() GLOBAL.TheFrontEnd:PushScreen(altattackchanger(self.owner)) end)
+
+    self.altattacksignifier = self:AddChild(Text(GLOBAL.DEFAULTFONT, 20, STRINGS.UI.CONTROLSSCREEN.INPUTS[1][self.owner.altattack]))
+    self.altattacksignifier:SetVAnchor(GLOBAL.ANCHOR_BOTTOM)
+    self.altattacksignifier:SetHAnchor(GLOBAL.ANCHOR_LEFT)
+    self.altattacksignifier:SetPosition(30, 20)
 end
 )
 
