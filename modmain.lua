@@ -43,7 +43,7 @@ AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.PIERCE,
 
 
 local HEAVY_SWING = AddAction("HEAVY_SWING", "Heavy Swing", function(act)
-    act.doer.componets.talker:Say("Let's get into the swing of things!")
+    act.doer.components.talker:Say("Let's get into the swing of things!")
     act.doer.components.combat:DoAttack(act.target)
     return true
 end
@@ -88,7 +88,7 @@ AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.RAPID_S
 
 
 local POWER_WHIP = AddAction("POWER_WHIP", "Power Whip", function(act)
-    act.doer.componets.talker:Say("Let's whip you into shape!")
+    act.doer.components.talker:Say("Let's whip you into shape!")
     act.doer.components.combat:DoAttack(act.target)
     return true
 end
