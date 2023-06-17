@@ -54,6 +54,7 @@ function AlternateAttackInputChanger:OnRawKey(key, down)
         self.owner.altattack = key
         TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_move")
         TheFrontEnd:PopScreen()
+        self.owner:PushEvent("altattackinputchanged")
         return true
     end
     self.iskeycontrol = false

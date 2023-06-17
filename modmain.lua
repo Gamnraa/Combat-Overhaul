@@ -149,6 +149,8 @@ AddClassPostConstruct("widgets/statusdisplays", function(self)
     self.altattacksignifier:SetVAnchor(GLOBAL.ANCHOR_BOTTOM)
     self.altattacksignifier:SetHAnchor(GLOBAL.ANCHOR_LEFT)
     self.altattacksignifier:SetPosition(30, 20)
+
+    self.owner:ListenForEvent("altattackinputchanged", function() self.altattacksignifier:SetString(STRINGS.UI.CONTROLSSCREEN.INPUTS[1][self.owner.altattack]) end)
 end
 )
 
