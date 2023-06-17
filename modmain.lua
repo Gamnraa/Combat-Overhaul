@@ -21,7 +21,7 @@ local ThePlayer = GLOBAL.ThePlayer
 local TheWorld = GLOBAL.TheWorld
 
 local function altattackactionhandler_client(inst, action)
-    if not (inst.sg:HasStateTag("attack") and action.target == inst.sg.statemem.attacktarget or IsEntityDead(inst)) then
+    if not (inst.sg:HasStateTag("attack") and action.target == inst.sg.statemem.attacktarget or GLOBAL.IsEntityDead(inst)) then
         return "attack"
     end
 end
