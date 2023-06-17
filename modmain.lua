@@ -66,13 +66,18 @@ AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.POWER_S
 
 --NOTE: Might want to change this one to Point Action
 local SPEAR_CHARGE = AddAction("SPEAR_CHARGE", "Spear Charge", function(act)
-    act.doer.componets.talker:Say("Chaaaarge!!")
+    act.doer.components.talker:Say("Chaaaarge!!")
     act.doer.components.combat:DoAttack(act.target)
     return true
 end
 )
 AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.SPEAR_CHARGE, "attack"))
-AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.SPEAR_CHARGE, "attack"))
+AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.SPEAR_CHARGE, function(inst, action)
+    if not (inst.sg:HasStateTag("attack") and action.target == inst.sg.statemem.attacktarget or IsEntityDead(inst)) then
+        return "attack"
+    end
+end
+))
 
 
 
