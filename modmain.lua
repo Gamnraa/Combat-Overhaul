@@ -20,6 +20,12 @@ local TheFrontEnd = GLOBAL.TheFrontEnd
 local ThePlayer = GLOBAL.ThePlayer
 local TheWorld = GLOBAL.TheWorld
 
+local function altattackactionhandler_client(inst, action)
+    if not (inst.sg:HasStateTag("attack") and action.target == inst.sg.statemem.attacktarget or IsEntityDead(inst)) then
+        return "attack"
+    end
+end
+
 local THROW_AXE = AddAction("THROW_AXE", "Throw Axe", function(act)
     act.doer.components.talker:Say("Happy Labor Day!")
     act.doer.components.combat:DoAttack(act.target)
@@ -27,7 +33,7 @@ local THROW_AXE = AddAction("THROW_AXE", "Throw Axe", function(act)
 end
 )
 AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.THROW_AXE, "attack"))
-AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.THROW_AXE, "attack"))
+AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.THROW_AXE, altattackactionhandler_client))
 
 
 
@@ -38,7 +44,7 @@ local PIERCE = AddAction("PIERCE", "Piercing Attack", function(act)
 end
 )
 AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.PIERCE, "attack"))
-AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.PIERCE, "attack"))
+AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.PIERCE, altattackactionhandler_client))
 
 
 
@@ -49,7 +55,7 @@ local HEAVY_SWING = AddAction("HEAVY_SWING", "Heavy Swing", function(act)
 end
 )
 AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.HEAVY_SWING, "attack"))
-AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.HEAVY_SWING, "attack"))
+AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.HEAVY_SWING, altattackactionhandler_client))
 
 
 
@@ -60,7 +66,7 @@ local POWER_SWING = AddAction("POWER_SWING", "Power Swing", function(act)
 end
 )
 AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.POWER_SWING, "attack"))
-AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.POWER_SWING, "attack"))
+AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.POWER_SWING, altattackactionhandler_client))
 
 
 
@@ -72,12 +78,7 @@ local SPEAR_CHARGE = AddAction("SPEAR_CHARGE", "Spear Charge", function(act)
 end
 )
 AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.SPEAR_CHARGE, "attack"))
-AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.SPEAR_CHARGE, function(inst, action)
-    if not (inst.sg:HasStateTag("attack") and action.target == inst.sg.statemem.attacktarget or IsEntityDead(inst)) then
-        return "attack"
-    end
-end
-))
+AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.SPEAR_CHARGE, altattackactionhandler_client))
 
 
 
@@ -88,7 +89,7 @@ local RAPID_SLASH = AddAction("RAPID_SLASH", "Rapid Slash", function(act)
 end
 )
 AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.RAPID_SLASH, "attack"))
-AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.RAPID_SLASH, "attack"))
+AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.RAPID_SLASH, altattackactionhandler_client))
 
 
 
@@ -99,7 +100,7 @@ local POWER_WHIP = AddAction("POWER_WHIP", "Power Whip", function(act)
 end
 )
 AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.POWER_WHIP, "attack"))
-AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.POWER_WHIP, "attack"))
+AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.POWER_WHIP, altattackactionhandler_client))
 
 local function candoaltattack(inst, doer, target, actions, right)
     if right and doer.replica.combat and doer.replica.combat:CanTarget(target) and target.replica.combat:CanBeAttacked() then
