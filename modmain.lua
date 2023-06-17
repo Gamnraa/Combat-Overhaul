@@ -15,9 +15,13 @@ local CommonHandlers = GLOBAL.CommonHandlers
 local STRINGS = GLOBAL.STRINGS
 local TUNING = GLOBAL.TUNING
 local ActionHandler = GLOBAL.ActionHandler
+local TheInput = GLOBAL.TheInput
+local TheFrontEnd = GLOBAL.TheFrontEnd
+local ThePlayer = GLOBAL.ThePlayer
+local TheWorld = GLOBAL.TheWorld
 
 local THROW_AXE = AddAction("THROW_AXE", "Throw Axe", function(act)
-    act.doer.componets.talker:Say("Happy Labor Day!")
+    act.doer.components.talker:Say("Happy Labor Day!")
     act.doer.components.combat:DoAttack(act.target)
     return true
 end
@@ -113,3 +117,76 @@ local function candoaltattack(inst, doer, target, actions, right)
 end
 
 AddComponentAction("EQUIPPED", "combatalternateattack", candoaltattack)
+
+ALT_ATTACKS = {
+    ["throwableaxe"]    = GLOBAL.ACTIONS.THROW_AXE,
+    ["piercing"]        = GLOBAL.ACTIONS.PIERCE,
+    ["strongblunt"]     = GLOBAL.ACTIONS.HEAVY_SWING,
+    ["weakblunt"]       = GLOBAL.ACTIONS.POWER_SWING,
+    ["thrust"]          = GLOBAL.ACTIONS.SPEAR_CHARGE,
+    ["sword"]           = GLOBAL.ACTIONS.RAPID_SLASH,
+    ["whip"]            = GLOBAL.ACTIONS.POWER_WHIP
+}
+
+AddPlayerPostInit(function(inst)
+    inst.altattack = GLOBAL.KEY_V
+end
+)
+
+local altattackchanger = require "screens/alternateattackinputchanger"
+local ImageButton = require "widgets/imagebutton"
+local Text = require "widgets/text"
+--local altattackchanger = require "screens/alternateattackinputchanger"
+AddClassPostConstruct("widgets/statusdisplays", function(self)
+    self.altattackbutton = self:AddChild(ImageButton("images/global.xml", "square.tex"))
+    self.altattackbutton:SetVAnchor(GLOBAL.ANCHOR_BOTTOM)
+    self.altattackbutton:SetHAnchor(GLOBAL.ANCHOR_LEFT)
+    self.altattackbutton:SetScale(.667)
+    self.altattackbutton:SetPosition(30, 55)
+    self.altattackbutton:SetOnClick(function() GLOBAL.TheFrontEnd:PushScreen(altattackchanger(self.owner)) end)
+
+    self.altattacksignifier = self:AddChild(Text(GLOBAL.DEFAULTFONT, 20, STRINGS.UI.CONTROLSSCREEN.INPUTS[1][self.owner.altattack]))
+    self.altattacksignifier:SetVAnchor(GLOBAL.ANCHOR_BOTTOM)
+    self.altattacksignifier:SetHAnchor(GLOBAL.ANCHOR_LEFT)
+    self.altattacksignifier:SetPosition(30, 20)
+
+    self.owner:ListenForEvent("altattackinputchanged", function() self.altattacksignifier:SetString(STRINGS.UI.CONTROLSSCREEN.INPUTS[1][self.owner.altattack]) end)
+end
+)
+
+
+
+function TryToPerformAltAttack(player, weapontype, range)
+    local function IsTargetHostile(inst, target)
+        if inst.HostileTest then return inst:HostileTest(target) end
+        if target.HostileToPlayerTest then return target:HostileToPlayerTest(inst) end
+        return target:HasTag("hostile")
+    end
+    
+    local function CanAttack(inst, target)
+        return IsTargetHostile(inst, target) and target.replica.combat and inst.replica.combat:CanTarget(target) and not inst.replica.combat:InCooldown()
+    end
+
+    local target = GLOBAL.FindEntity(player, range, function(target) return CanAttack(player, target) end, nil, {"wall"})
+    if target then
+        local act = GLOBAL.BufferedAction(player, target, ALT_ATTACKS[weapontype])
+        player.components.playercontroller:DoAction(act)
+    end
+end
+
+AddSimPostInit(function()
+    TheInput:AddKeyHandler(function(key, down)
+        local theplayer = GLOBAL.ThePlayer
+        if down and theplayer.altattack == key then
+            if GLOBAL.TheWorld.ismastersim then
+                TryToPerformAltAttack(theplayer, "throwableaxe", 10)
+            else
+                SendModRPCToServer(GetModRPC("gramcombatRPC", "gramcombat"), "throwableaxe", 10)
+            end
+        end
+    end
+    )
+end
+)
+
+AddModRPCHandler("gramcombatRPC", "gramcombat", TryToPerformAltAttack)
