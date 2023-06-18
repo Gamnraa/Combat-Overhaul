@@ -181,6 +181,16 @@ function TryToPerformAltAttack(player, weapontype, range)
 end
 
 AddSimPostInit(function()
+    local function IsTargetHostile(inst, target)
+        if inst.HostileTest then return inst:HostileTest(target) end
+        if target.HostileToPlayerTest then return target:HostileToPlayerTest(inst) end
+        return target:HasTag("hostile")
+    end
+    
+    local function CanAttack(inst, target)
+        return IsTargetHostile(inst, target) and target.replica.combat and inst.replica.combat:CanTarget(target) and not inst.replica.combat:InCooldown()
+    end
+
     TheInput:AddKeyHandler(function(key, down)
         local theplayer = GLOBAL.ThePlayer
         if down and theplayer.altattack == key then
@@ -203,6 +213,12 @@ AddSimPostInit(function()
                 attack = "sword"
             elseif weapon:HasTag("whip") then
                 attack = "whip"
+            end
+
+            local target = GLOBAL.FindEntity(theplayer, 10, function(target) return CanAttack(theplayer, target) end, nil, {"wall"})
+            if target then
+                local act = GLOBAL.BufferedAction(theplayer, target, ALT_ATTACKS[attack])
+                theplayer.components.playercontroller:DoAction(act)
             end
 
             if GLOBAL.TheWorld.ismastersim then
