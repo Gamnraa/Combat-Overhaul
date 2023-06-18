@@ -222,7 +222,8 @@ AddSimPostInit(function()
                 
                 local act = GLOBAL.BufferedAction(theplayer, target, ALT_ATTACKS[attack], weapon)
                 print(act.action.code)
-                GLOBAL.SendRPCToServer(GLOBAL.RPC.ControllerAttackButton, target, nil, act.action.canforce)
+                print(ALT_ATTACKS[attack].code)
+                GLOBAL.SendRPCToServer(GLOBAL.RPC.ActionButton, ALT_ATTACKS[attack].code, target, false, nil, act.action.mod_name)
                 
                 theplayer.components.playercontroller:DoAction(act)
             end
