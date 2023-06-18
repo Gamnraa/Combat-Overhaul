@@ -20,6 +20,22 @@ local TheFrontEnd = GLOBAL.TheFrontEnd
 local ThePlayer = GLOBAL.ThePlayer
 local TheWorld = GLOBAL.TheWorld
 
+local function altattackactionhandler_server(inst, action)
+    inst.sg.mem.localchainattack = not action.forced or nil
+    local playercontroller = inst.components.playercontroller
+    local attack_tag =
+				playercontroller ~= nil and
+				playercontroller.remote_authority and
+				playercontroller.remote_predicting and
+				"abouttoattack" or
+				"attack"
+
+    if not (inst.sg:HasStateTag(attack_tag) and action.target == inst.sg.statemem.attacktarget or inst.components.health:IsDead()) then
+        print("attack")
+        return "attack"
+    end
+end
+
 local function altattackactionhandler_client(inst, action)
     if not (inst.sg:HasStateTag("attack") and action.target == inst.sg.statemem.attacktarget or GLOBAL.IsEntityDead(inst)) then
         return "attack"
@@ -32,7 +48,7 @@ local THROW_AXE = AddAction("THROW_AXE", "Throw Axe", function(act)
     return true
 end
 )
-AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.THROW_AXE, "attack"))
+AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.THROW_AXE, altattackactionhandler_server))
 AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.THROW_AXE, altattackactionhandler_client))
 
 
@@ -43,7 +59,7 @@ local PIERCE = AddAction("PIERCE", "Piercing Attack", function(act)
     return true
 end
 )
-AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.PIERCE, "attack"))
+AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.PIERCE, altattackactionhandler_server))
 AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.PIERCE, altattackactionhandler_client))
 
 
@@ -54,7 +70,7 @@ local HEAVY_SWING = AddAction("HEAVY_SWING", "Heavy Swing", function(act)
     return true
 end
 )
-AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.HEAVY_SWING, "attack"))
+AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.HEAVY_SWING, altattackactionhandler_server))
 AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.HEAVY_SWING, altattackactionhandler_client))
 
 
@@ -65,7 +81,7 @@ local POWER_SWING = AddAction("POWER_SWING", "Power Swing", function(act)
     return true
 end
 )
-AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.POWER_SWING, "attack"))
+AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.POWER_SWING, altattackactionhandler_server))
 AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.POWER_SWING, altattackactionhandler_client))
 
 
@@ -77,7 +93,7 @@ local SPEAR_CHARGE = AddAction("SPEAR_CHARGE", "Spear Charge", function(act)
     return true
 end
 )
-AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.SPEAR_CHARGE, "attack"))
+AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.SPEAR_CHARGE, altattackactionhandler_server))
 AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.SPEAR_CHARGE, altattackactionhandler_client))
 
 
@@ -88,7 +104,7 @@ local RAPID_SLASH = AddAction("RAPID_SLASH", "Rapid Slash", function(act)
     return true
 end
 )
-AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.RAPID_SLASH, "attack"))
+AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.RAPID_SLASH, altattackactionhandler_server))
 AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.RAPID_SLASH, altattackactionhandler_client))
 
 
@@ -99,7 +115,7 @@ local POWER_WHIP = AddAction("POWER_WHIP", "Power Whip", function(act)
     return true
 end
 )
-AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.POWER_WHIP, "attack"))
+AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.POWER_WHIP, altattackactionhandler_server))
 AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.POWER_WHIP, altattackactionhandler_client))
 
 local function candoaltattack(inst, doer, target, actions, right)
@@ -231,5 +247,3 @@ AddSimPostInit(function()
     )
 end
 )
-
-AddModRPCHandler("gramcombatRPC", "gramcombat", TryToPerformAltAttack)
