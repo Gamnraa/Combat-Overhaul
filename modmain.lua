@@ -180,36 +180,6 @@ function TryToPerformAltAttack(player, weapontype, range)
     end
 end
 
-AddComponentPostInit("playercontroller", function(cont)
-    cont.OnRemoteActionButton = function(self, actioncode, target, isreleased, noforce, mod_name)
-        print("OnRemoteActionButton")
-        if self.ismastersim and self:IsEnabled() and self.handler == nil then
-            self.remote_controls[GLOBAL.CONTROL_ACTION] = 0
-            if actioncode ~= nil then
-                GLOBAL.SetClientRequestedAction(actioncode, mod_name)
-                local buffaction = self:GetActionButtonAction(target)
-                print(buffaction)
-                GLOBAL.ClearClientRequestedAction()
-                if buffaction ~= nil and buffaction.action.code == actioncode and buffaction.action.mod_name == mod_name then
-                    if buffaction.action.canforce and not noforce then
-                        buffaction:SetActionPoint(self:GetRemotePredictPosition() or self.inst:GetPosition())
-                        buffaction.forced = true
-                    end
-                    self.locomotor:PushAction(buffaction, true)
-                --elseif mod_name ~= nil then
-                    --print("Remote action button action failed: "..tostring(ACTION_MOD_IDS[mod_name][actioncode]))
-                --else
-                    --print("Remote action button action failed: "..tostring(ACTION_IDS[actioncode]))
-                end
-            end
-            if isreleased then
-                self.remote_controls[CONTROL_ACTION] = nil
-            end
-        end
-    end
-end
-)
-
 AddSimPostInit(function()
     local function IsTargetHostile(inst, target)
         if inst.HostileTest then return inst:HostileTest(target) end
@@ -252,7 +222,7 @@ AddSimPostInit(function()
                 
                 local act = GLOBAL.BufferedAction(theplayer, target, ALT_ATTACKS[attack], weapon)
                 --print(theplayer.components.playercontroller.actionbuttonoverride(target))
-                GLOBAL.SendRPCToServer(GLOBAL.RPC.ActionButton, act.action.code, target, false, nil, act.action.mod_name)
+                GLOBAL.SendRPCToServer(GLOBAL.RPC.RightClick, act.action.code, x, z, target, 0, false, nil, nil, act.action.mod_name)
                 
                 theplayer.components.playercontroller:DoAction(act)
             end
