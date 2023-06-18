@@ -217,14 +217,20 @@ AddSimPostInit(function()
 
             local target = GLOBAL.FindEntity(theplayer, 10, function(target) return CanAttack(theplayer, target) end, nil, {"wall"})
             if target then
-                local act = GLOBAL.BufferedAction(theplayer, target, ALT_ATTACKS[attack])
+                local x, y, z = theplayer.Transform:GetWorldPosition()
+                local test = theplayer.components.playercontroller
+                
+                local act = GLOBAL.BufferedAction(theplayer, target, ALT_ATTACKS[attack], weapon)
+                print(act.action.code)
+                GLOBAL.SendRPCToServer(GLOBAL.RPC.ControllerAttackButton, target, nil, act.action.canforce)
+                
                 theplayer.components.playercontroller:DoAction(act)
             end
 
             if GLOBAL.TheWorld.ismastersim then
-                TryToPerformAltAttack(theplayer, attack, 10)
+                --TryToPerformAltAttack(theplayer, attack, 10)
             else
-                SendModRPCToServer(GetModRPC("gramcombatRPC", "gramcombat"), attack, 10)
+             --   SendModRPCToServer(GetModRPC("gramcombatRPC", "gramcombat"), attack, 10)
             end
         end
     end
