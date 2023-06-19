@@ -3,7 +3,7 @@ local function thrownaxe_onattack(inst, attacker, target)
     local x, y, z = inst.Transform:GetWorldPosition()
     axe.Transform:SetPosition(x, 1, z)
 
-    target.components.combat:GetAttacked(attacker, inst.components.combatalternateattack.damage, axe)
+    target.components.combat:GetAttacked(attacker, axe.components.combatalternateattack.damage, axe)
     if axe.components.finiteuses then axe.components.finiteuses:Use(3) end
 
     inst:Remove()
