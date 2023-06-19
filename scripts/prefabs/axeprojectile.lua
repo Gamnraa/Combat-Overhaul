@@ -3,7 +3,7 @@ local assets =
     Asset("ANIM", "anim/boomerang.zip")
 }
 
-local function makeprojectile(prefab, bank, build, damage)
+local function makeprojectile(name, bank, build, damage)
     local function fn()
         local inst = CreateEntity()
 
