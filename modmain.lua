@@ -1,3 +1,8 @@
+PrefabFiles = {
+    "axeprojectile"
+}
+
+
 modimport "scripts/throwableaxeadditions"
 modimport "scripts/piercingadditions"
 modimport "scripts/strongbluntadditions"
@@ -44,10 +49,11 @@ end
 
 local THROW_AXE = AddAction("THROW_AXE", "Throw Axe", function(act)
     act.doer.components.talker:Say("Happy Labor Day!")
-    act.doer.components.combat:DoAttack(act.target)
+    act.invobject.components.combatalternateattack:ThrowWeapon(act.doer, act.target)
     return true
 end
 )
+THROW_AXE.distance = 10
 AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.THROW_AXE, altattackactionhandler_server))
 AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.THROW_AXE, altattackactionhandler_client))
 
@@ -231,7 +237,7 @@ AddSimPostInit(function()
                 attack = "whip"
             end
 
-            local target = GLOBAL.FindEntity(theplayer, 10, function(target) return CanAttack(theplayer, target) end, nil, {"wall"})
+            local target = GLOBAL.FindEntity(theplayer, 12, function(target) return CanAttack(theplayer, target) end, nil, {"wall"})
             if target then
                 local x, y, z = theplayer.Transform:GetWorldPosition()
                 local test = theplayer.components.playercontroller
