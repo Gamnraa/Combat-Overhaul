@@ -3,7 +3,7 @@ local function thrownaxe_onattack(inst, attacker, target)
     local x, y, z = inst.Transform:GetWorldPosition()
     axe.Transform:SetPosition(x, 1, z)
 
-    target.components.combat:GetAttacked(attacker, 0, axe)
+    target.components.combat:GetAttacked(attacker, inst.components.combatalternateattack.damage, axe)
     if axe.components.finiteuses then axe.components.finiteuses:Use(3) end
 
     inst:Remove()
@@ -12,9 +12,9 @@ end
 local CombatAlternateAttack = Class(function(self, inst)
     self.inst = inst
     self.inst:AddTag("altattack")
+    self.damage = 0
     self.projectile = nil
     self.onattack = nil
-
  end,
  nil
 )
@@ -23,7 +23,12 @@ function CombatAlternateAttack:SetWeaponType(weapontype)
     if weapontype == "throwableaxe" then
         self.onattack = thrownaxe_onattack
         self.projectile = "axe_thrown"
+        self.damage = 10
     end
+end
+
+function CombatAlternateAttack:SetDamage(damage)
+    self.damage = damage
 end
 
 function CombatAlternateAttack:SetProjectile(projectile)

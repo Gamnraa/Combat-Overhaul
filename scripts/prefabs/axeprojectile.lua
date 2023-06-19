@@ -3,7 +3,7 @@ local assets =
     Asset("ANIM", "anim/boomerang.zip")
 }
 
-local function makeprojectile(name, bank, build, damage)
+local function makeprojectile(name, bank, build)
     local function fn()
         local inst = CreateEntity()
 
@@ -29,14 +29,14 @@ local function makeprojectile(name, bank, build, damage)
         --inst.components.projectile:SetLaunchOffset({x=0, y=2})
         inst.components.projectile:SetHitDist(2)
         inst:AddComponent("weapon")
-        inst.components.weapon:SetDamage(damage)
+        inst.components.weapon:SetDamage(0)
 
         return inst
     end
     return Prefab(name, fn, assets)
 end
 
-return makeprojectile("axe_thrown", "boomerang", "boomerang", 10),
-       makeprojectile("goldenaxe_thrown", "boomerang", "boomerang", 15),
-       makeprojectile("moonglassaxe_thrown", "boomerang", "boomerang", 25),
-       makeprojectile("lucy_thrown", "boomerang", "boomerang", 12)
+return makeprojectile("axe_thrown", "boomerang", "boomerang"),
+       makeprojectile("goldenaxe_thrown", "boomerang", "boomerang"),
+       makeprojectile("moonglassaxe_thrown", "boomerang", "boomerang"),
+       makeprojectile("lucy_thrown", "boomerang", "boomerang")
