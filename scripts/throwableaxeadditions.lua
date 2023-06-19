@@ -4,7 +4,7 @@ local function thrownaxe_onattack(inst, attacker, target)
     local axe = GLOBAL.SpawnSaveRecord(inst.oldprefab)
     axe.Transform:SetPosition(inst:GetPosition():Get())
 
-    target.components.combat:GetAttacked(attacker, inst.components.weapon:GetDamage(attacker, target), axe)
+    target.components.combat:GetAttacked(attacker, 0, axe)
     if axe.components.finiteuses then axe.components.finiteuses:Use(3) end
 
     inst:Remove()
