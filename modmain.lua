@@ -44,7 +44,7 @@ end
 
 local THROW_AXE = AddAction("THROW_AXE", "Throw Axe", function(act)
     act.doer.components.talker:Say("Happy Labor Day!")
-    act.doer.components.combat:DoAttack(act.target)
+    act.invobj.components.combatalternateattack:ThrowWeapon(act.doer, act.target)
     return true
 end
 )
