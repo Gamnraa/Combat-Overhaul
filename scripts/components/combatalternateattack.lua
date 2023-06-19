@@ -1,5 +1,5 @@
 local function thrownaxe_onattack(inst, attacker, target)
-    local axe = GLOBAL.SpawnSaveRecord(inst.oldprefab)
+    local axe = SpawnSaveRecord(inst.oldprefab)
     local x, y, z = inst.Transform:GetWorldPosition()
     axe.Transform:SetPosition(x, 1, z)
 
