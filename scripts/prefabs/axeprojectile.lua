@@ -4,33 +4,36 @@ local assets =
 }
 
 local function makeprojectile(prefab, bank, build, damage)
-    local inst = CreateEntity()
+    local function fn()
+        local inst = CreateEntity()
 
-    inst.entity:AddTransform()
-    inst.entity:AddAnimState()
-    inst.entity:AddNetwork()
+        inst.entity:AddTransform()
+        inst.entity:AddAnimState()
+        inst.entity:AddNetwork()
 
-    MakeInventoryPhysics(inst)
-    RemovePhysicsColliders(inst)
+        MakeInventoryPhysics(inst)
+        RemovePhysicsColliders(inst)
 
-    inst.AnimState:SetBank(bank)
-    inst.AnimState:SetBuild(build)
-    inst.AnimState:PlayAnimation("spin_loop", true)
+        inst.AnimState:SetBank(bank)
+        inst.AnimState:SetBuild(build)
+        inst.AnimState:PlayAnimation("spin_loop", true)
 
-    if not TheWorld.ismastersim then
+        if not TheWorld.ismastersim then
+            return inst
+        end
+
+
+        inst:AddTag("projectile")
+        inst:AddComponent("projectile")
+        inst.components.projectile:SetSpeed(30)
+        inst.components.projectile:SetLaunchOffset({x=0, y=2})
+        inst.components.projectile:SetHitDist(2)
+        inst:AddComponent("weapon")
+        inst.components.weapon:SetDamage(damage)
+
         return inst
     end
-
-
-    inst:AddTag("projectile")
-    inst:AddComponent("projectile")
-    inst.components.projectile:SetSpeed(30)
-	inst.components.projectile:SetLaunchOffset({x=0, y=2})
-	inst.components.projectile:SetHitDist(2)
-    inst:AddComponent("weapon")
-	inst.components.weapon:SetDamage(damage)
-
-    return inst
+    return Prefab(name, fn, assets)
 end
 
 return makeprojectile("axe_thrown", "boomerang", "boomerang", 10),
