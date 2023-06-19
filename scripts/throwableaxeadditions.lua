@@ -2,7 +2,8 @@ require "gramutil"
 
 local function thrownaxe_onattack(inst, attacker, target)
     local axe = GLOBAL.SpawnSaveRecord(inst.oldprefab)
-    axe.Transform:SetPosition(inst:GetPosition():Get())
+    local x, y, z = inst.Transform:GetWorldPosition()
+    axe.Transform:SetPosition(x, 1, z)
 
     target.components.combat:GetAttacked(attacker, 0, axe)
     if axe.components.finiteuses then axe.components.finiteuses:Use(3) end
