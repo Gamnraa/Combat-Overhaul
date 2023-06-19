@@ -1,7 +1,7 @@
 require "gramutil"
 
 local function thrownaxe_onattack(inst, attacker, target)
-    local axe = GLOBAL.SpawnSaveRecored(inst.oldprefab)
+    local axe = GLOBAL.SpawnSaveRecord(inst.oldprefab)
     axe.Transform:SetPostion(inst:GetPosition():Get())
 
     target.components.combat:GetAttack(attacker, inst.components.weapon:GetDamage(attacker, target), axe)
