@@ -20,14 +20,36 @@ local TheFrontEnd = GLOBAL.TheFrontEnd
 local ThePlayer = GLOBAL.ThePlayer
 local TheWorld = GLOBAL.TheWorld
 
+local function altattackactionhandler_server(inst, action)
+    inst.sg.mem.localchainattack = not action.forced or nil
+    local playercontroller = inst.components.playercontroller
+    local attack_tag =
+				playercontroller ~= nil and
+				playercontroller.remote_authority and
+				playercontroller.remote_predicting and
+				"abouttoattack" or
+				"attack"
+
+    if not (inst.sg:HasStateTag(attack_tag) and action.target == inst.sg.statemem.attacktarget or inst.components.health:IsDead()) then
+        print("attack")
+        return "attack"
+    end
+end
+
+local function altattackactionhandler_client(inst, action)
+    if not (inst.sg:HasStateTag("attack") and action.target == inst.sg.statemem.attacktarget or GLOBAL.IsEntityDead(inst)) then
+        return "attack"
+    end
+end
+
 local THROW_AXE = AddAction("THROW_AXE", "Throw Axe", function(act)
     act.doer.components.talker:Say("Happy Labor Day!")
     act.doer.components.combat:DoAttack(act.target)
     return true
 end
 )
-AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.THROW_AXE, "attack"))
-AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.THROW_AXE, "attack"))
+AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.THROW_AXE, altattackactionhandler_server))
+AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.THROW_AXE, altattackactionhandler_client))
 
 
 
@@ -37,8 +59,8 @@ local PIERCE = AddAction("PIERCE", "Piercing Attack", function(act)
     return true
 end
 )
-AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.PIERCE, "attack"))
-AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.PIERCE, "attack"))
+AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.PIERCE, altattackactionhandler_server))
+AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.PIERCE, altattackactionhandler_client))
 
 
 
@@ -48,8 +70,8 @@ local HEAVY_SWING = AddAction("HEAVY_SWING", "Heavy Swing", function(act)
     return true
 end
 )
-AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.HEAVY_SWING, "attack"))
-AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.HEAVY_SWING, "attack"))
+AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.HEAVY_SWING, altattackactionhandler_server))
+AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.HEAVY_SWING, altattackactionhandler_client))
 
 
 
@@ -59,20 +81,20 @@ local POWER_SWING = AddAction("POWER_SWING", "Power Swing", function(act)
     return true
 end
 )
-AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.POWER_SWING, "attack"))
-AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.POWER_SWING, "attack"))
+AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.POWER_SWING, altattackactionhandler_server))
+AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.POWER_SWING, altattackactionhandler_client))
 
 
 
 --NOTE: Might want to change this one to Point Action
 local SPEAR_CHARGE = AddAction("SPEAR_CHARGE", "Spear Charge", function(act)
-    act.doer.componets.talker:Say("Chaaaarge!!")
+    act.doer.components.talker:Say("Chaaaarge!!")
     act.doer.components.combat:DoAttack(act.target)
     return true
 end
 )
-AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.SPEAR_CHARGE, "attack"))
-AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.SPEAR_CHARGE, "attack"))
+AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.SPEAR_CHARGE, altattackactionhandler_server))
+AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.SPEAR_CHARGE, altattackactionhandler_client))
 
 
 
@@ -82,8 +104,8 @@ local RAPID_SLASH = AddAction("RAPID_SLASH", "Rapid Slash", function(act)
     return true
 end
 )
-AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.RAPID_SLASH, "attack"))
-AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.RAPID_SLASH, "attack"))
+AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.RAPID_SLASH, altattackactionhandler_server))
+AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.RAPID_SLASH, altattackactionhandler_client))
 
 
 
@@ -93,8 +115,8 @@ local POWER_WHIP = AddAction("POWER_WHIP", "Power Whip", function(act)
     return true
 end
 )
-AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.POWER_WHIP, "attack"))
-AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.POWER_WHIP, "attack"))
+AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.POWER_WHIP, altattackactionhandler_server))
+AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.POWER_WHIP, altattackactionhandler_client))
 
 local function candoaltattack(inst, doer, target, actions, right)
     if right and doer.replica.combat and doer.replica.combat:CanTarget(target) and target.replica.combat:CanBeAttacked() then
@@ -175,6 +197,16 @@ function TryToPerformAltAttack(player, weapontype, range)
 end
 
 AddSimPostInit(function()
+    local function IsTargetHostile(inst, target)
+        if inst.HostileTest then return inst:HostileTest(target) end
+        if target.HostileToPlayerTest then return target:HostileToPlayerTest(inst) end
+        return target:HasTag("hostile")
+    end
+    
+    local function CanAttack(inst, target)
+        return IsTargetHostile(inst, target) and target.replica.combat and inst.replica.combat:CanTarget(target) and not inst.replica.combat:InCooldown()
+    end
+
     TheInput:AddKeyHandler(function(key, down)
         local theplayer = GLOBAL.ThePlayer
         if down and theplayer.altattack == key then
@@ -199,15 +231,19 @@ AddSimPostInit(function()
                 attack = "whip"
             end
 
-            if GLOBAL.TheWorld.ismastersim then
-                TryToPerformAltAttack(theplayer, attack, 10)
-            else
-                SendModRPCToServer(GetModRPC("gramcombatRPC", "gramcombat"), attack, 10)
+            local target = GLOBAL.FindEntity(theplayer, 10, function(target) return CanAttack(theplayer, target) end, nil, {"wall"})
+            if target then
+                local x, y, z = theplayer.Transform:GetWorldPosition()
+                local test = theplayer.components.playercontroller
+                
+                local act = GLOBAL.BufferedAction(theplayer, target, ALT_ATTACKS[attack], weapon)
+                --print(theplayer.components.playercontroller.actionbuttonoverride(target))
+                GLOBAL.SendRPCToServer(GLOBAL.RPC.RightClick, act.action.code, x, z, target, 0, false, nil, nil, act.action.mod_name)
+                
+                theplayer.components.playercontroller:DoAction(act)
             end
         end
     end
     )
 end
 )
-
-AddModRPCHandler("gramcombatRPC", "gramcombat", TryToPerformAltAttack)
