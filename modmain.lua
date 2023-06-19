@@ -237,7 +237,7 @@ AddSimPostInit(function()
                 attack = "whip"
             end
 
-            local target = GLOBAL.FindEntity(theplayer, 10, function(target) return CanAttack(theplayer, target) end, nil, {"wall"})
+            local target = GLOBAL.FindEntity(theplayer, 12, function(target) return CanAttack(theplayer, target) end, nil, {"wall"})
             if target then
                 local x, y, z = theplayer.Transform:GetWorldPosition()
                 local test = theplayer.components.playercontroller
