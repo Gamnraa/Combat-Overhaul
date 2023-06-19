@@ -1,3 +1,8 @@
+PrefabFiles = {
+    "axeprojectile"
+}
+
+
 modimport "scripts/throwableaxeadditions"
 modimport "scripts/piercingadditions"
 modimport "scripts/strongbluntadditions"
