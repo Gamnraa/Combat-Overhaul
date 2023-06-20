@@ -1,9 +1,10 @@
-local function thrownaxe_onattack(inst, attacker, target)
+local function thrownaxe_onattack(inst, attacker, target, critmult)
     local axe = SpawnSaveRecord(inst.oldprefab)
     local x, y, z = inst.Transform:GetWorldPosition()
     axe.Transform:SetPosition(x, 1, z)
+    local altattack = axe.components.combatalternateattack
 
-    target.components.combat:GetAttacked(attacker, axe.components.combatalternateattack.damage, axe)
+    target.components.combat:GetAttacked(attacker, altattack.damage * critmult, axe)
     if axe.components.finiteuses then axe.components.finiteuses:Use(3) end
 
     inst:Remove()
@@ -13,6 +14,8 @@ local CombatAlternateAttack = Class(function(self, inst)
     self.inst = inst
     self.inst:AddTag("altattack")
     self.damage = 0
+    self.critchance = 10
+    self.critmult = 1.5
     self.projectile = nil
     self.onattack = nil
  end,
@@ -24,11 +27,21 @@ function CombatAlternateAttack:SetWeaponType(weapontype)
         self.onattack = thrownaxe_onattack
         self.projectile = "axe_thrown"
         self.damage = 10
+        self.critchance = 5
+        self.critmult = 2
     end
 end
 
 function CombatAlternateAttack:SetDamage(damage)
     self.damage = damage
+end
+
+function CombatAlternateAttack:SetCritChance(percentchance)
+    self.critchance = percentchance
+end
+
+function CombatAlternateAttack:SetCritMultiplier(multiplier)
+    self.critmult = multiplier
 end
 
 function CombatAlternateAttack:SetProjectile(projectile)
@@ -40,8 +53,10 @@ function CombatAlternateAttack:SetOnAttack(fn)
 end
 
 function CombatAlternateAttack:OnAttack(attacker, target)
+    local critmult = math.random(100) <= self.critchance and self.critmult or 1
+
     if self.onattack then
-        self.onattack(self.inst, attacker, target)
+        self.onattack(self.inst, attacker, target, critmult)
     end
 end
 
@@ -50,7 +65,7 @@ function CombatAlternateAttack:ThrowWeapon(attacker, target)
     projectile.oldprefab = self.inst:GetSaveRecord()
     projectile.Transform:SetPosition(attacker.Transform:GetWorldPosition())
 
-    projectile.components.projectile.onhit = self.onattack
+    projectile.components.projectile.onhit = self.OnAttack
     projectile.components.projectile:Throw(attacker, target, attacker)
 
     self.inst:Remove()
