@@ -56,7 +56,8 @@ function CombatAlternateAttack:OnAttack(attacker, target)
     local critmult = math.random(100) <= self.critchance and self.critmult or 1
 
     if self.onattack then
-        self.onattack(self.inst, attacker, target, critmult)
+        --For projectiles, self.inst is actually self because of how we handle them
+        self.onattack(self.inst or self, attacker, target, critmult)
     end
 end
 
@@ -66,6 +67,10 @@ function CombatAlternateAttack:ThrowWeapon(attacker, target)
     projectile.Transform:SetPosition(attacker.Transform:GetWorldPosition())
 
     projectile.components.projectile.onhit = self.OnAttack
+    --Remember, we're using the projectile, not combatalternateattack for this
+    projectile.onattack = self.onattack
+    projectile.critchance = self.critchance
+    projectile.critmult = self.critmult
     projectile.components.projectile:Throw(attacker, target, attacker)
 
     self.inst:Remove()
