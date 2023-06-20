@@ -1,3 +1,11 @@
+local function applycomponentdatatoinst(altattack, inst)
+    inst.damage = altattack.damage
+    inst.flatdamage = altattack.flatdamage
+    inst.critchance = altattack.critchance
+    inst.critmult = altattack.critmult
+    inst.onattack = altattack.onattack
+end
+
 local function thrownaxe_onattack(inst, attacker, target, critmult)
     local axe = SpawnSaveRecord(inst.oldprefab)
     local x, y, z = inst.Transform:GetWorldPosition()
@@ -77,9 +85,7 @@ function CombatAlternateAttack:ThrowWeapon(attacker, target)
 
     projectile.components.projectile.onhit = self.OnAttack
     --Remember, we're using the projectile, not combatalternateattack for this
-    projectile.onattack = self.onattack
-    projectile.critchance = self.critchance
-    projectile.critmult = self.critmult
+    applycomponentdatatoinst(self, projectile)
     projectile.components.projectile:Throw(attacker, target, attacker)
 
     self.inst:Remove()
