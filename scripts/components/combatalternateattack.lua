@@ -14,6 +14,7 @@ local CombatAlternateAttack = Class(function(self, inst)
     self.inst = inst
     self.inst:AddTag("altattack")
     self.damage = 0
+    self.flatdamage = 0
     self.critchance = 10
     self.critmult = 1.5
     self.projectile = nil
@@ -34,6 +35,10 @@ end
 
 function CombatAlternateAttack:SetDamage(damage)
     self.damage = damage
+end
+
+function CombatAlternateAttack:SetFlatDamage(damage)
+    self.flatdamage = damage
 end
 
 function CombatAlternateAttack:SetCritChance(percentchance)
@@ -58,6 +63,10 @@ function CombatAlternateAttack:OnAttack(attacker, target)
     if self.onattack then
         --For projectiles, self.inst is actually self because of how we handle them
         self.onattack(self.inst or self, attacker, target, critmult)
+    end
+
+    if target.components.heatlh and not target.components.heatlh:IsDead() then
+        target.components.heatlh:DoDelta(-self.flatdamage)
     end
 end
 
