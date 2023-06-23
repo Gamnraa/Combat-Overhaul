@@ -51,7 +51,7 @@ local spear_charge_pre = State({
 
     onenter = function(inst, target)
         inst.components.locomotor:Stop()
-        inst.AnimState:PlayAnimation("attack_pre")
+        inst.AnimState:PlayAnimation("dial_loop")
         inst.components.combat:StartAttack()
 
         if not target then target = inst.components.combat.target end
