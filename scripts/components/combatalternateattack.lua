@@ -38,6 +38,10 @@ function CombatAlternateAttack:SetWeaponType(weapontype)
         self.damage = 10
         self.critchance = 5
         self.critmult = 2
+    elseif weapontype == "thrust" then
+        self.damage = 16
+        self.critchange = 20
+        self.critmult = 1.25
     end
 end
 
