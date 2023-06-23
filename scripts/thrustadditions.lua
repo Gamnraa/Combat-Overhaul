@@ -162,7 +162,7 @@ local spear_charge_loop = State({
 
     ontimeout = function(inst)
         inst.sg.statemem.lunge = true
-        inst.sg:GoToState("lunge_pst")
+        inst.sg:GoToState("spear_charge_pst")
     end,
 
     onexit = function(inst)
@@ -173,5 +173,34 @@ local spear_charge_loop = State({
         end
     end,
 })
-
 AddStategraphState("wilson", spear_charge_loop)
+
+local spear_charge_pst = (State{
+    name = "spear_charge_pst",
+    tags = { "busy", "noattack", "temp_invincible"},
+
+    onenter = function(inst, target)
+        inst.AnimState:PlayAnimation("dial_loop")
+        inst.Physics:SetMotorVelOverride(12, 0, 0)
+        inst.sg.statemem.target = target
+    end,
+
+    onupdate = function(inst)
+        inst.Physics:SetMotorVelOverride(inst.Physics:GetMotorVel() * .8, 0, 0)
+    end,
+
+    events =
+    {
+        EventHandler("animover", function(inst)
+            if inst.AnimState:AnimDone() then
+                inst.sg:GoToState("idle")
+            end
+        end),
+    },
+
+    onexit = function(inst)
+        inst.Physics:CollidesWith(GLOBAL.COLLISION.GIANTS)
+        GLOBAL.ToggleOnCharacterCollisions(inst)
+    end,
+})
+AddStategraphState("wilson", spear_charge_pst)
