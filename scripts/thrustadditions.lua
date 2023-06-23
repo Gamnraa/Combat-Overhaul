@@ -95,4 +95,80 @@ local spear_charge_pre = State({
 local spear_charge_loop = State({
     name = "spear_charge_loop",
     tags = {"attack", "busy", "temp_invincible", "autopredict"},
+
+    onenter = function(inst, data)
+        --inst.AnimState:PlayAnimation("lunge_loop") --NOTE: this anim NOT a loop yo
+        inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_nightsword")
+        inst.SoundEmitter:PlaySound("dontstarve/impacts/impact_shadow_med_sharp")
+        inst.Physics:ClearCollidesWith(GLOBAL.COLLISION.GIANTS)
+        GLOBAL.ToggleOffCharacterCollisions(inst)
+
+        if data ~= nil then
+            if data.target ~= nil and data.target:IsValid() then
+                inst.sg.statemem.target = data.target
+                inst:ForceFacePoint(data.target.Transform:GetWorldPosition())
+            elseif data.targetpos ~= nil then
+                inst:ForceFacePoint(data.targetpos)
+            end
+        end
+        inst.Physics:SetMotorVelOverride(35, 0, 0)
+
+        inst.sg:SetTimeout(8 * FRAMES)
+    end,
+
+    onupdate = function(inst)
+        if inst.sg.statemem.attackdone then
+            return
+        end
+        local target = inst.sg.statemem.target
+        if target == nil or not target:IsValid() then
+            if inst.sg.statemem.animdone then
+                inst.sg.statemem.lunge = true
+                inst.sg:GoToState("lunge_pst")
+                return
+            end
+            inst.sg.statemem.target = nil
+        elseif inst:IsNear(target, 1) then
+            local x, y, z = target.Transform:GetWorldPosition()
+            fx.Transform:SetPosition(x, y + 1.5, z)
+            fx.Transform:SetRotation(inst.Transform:GetRotation())
+
+            inst.components.combat:DoAttack(target)
+            --Drop aggro again here, since we're in i-frames, and we might've
+            --triggered spawners, and they will be initially targeted on me.
+            if inst.sg.statemem.animdone then
+                inst.sg.statemem.lunge = true
+                inst.sg:GoToState("lunge_pst", target)
+                return
+            end
+            inst.sg.statemem.attackdone = true
+        end
+    end,
+
+    events =
+    {
+        EventHandler("animover", function(inst)
+            if inst.AnimState:AnimDone() then
+                if inst.sg.statemem.attackdone or inst.sg.statemem.target == nil then
+                    inst.sg.statemem.lunge = true
+                    inst.sg:GoToState("lunge_pst", inst.sg.statemem.target)
+                    return
+                end
+                inst.sg.statemem.animdone = true
+            end
+        end),
+    },
+
+    ontimeout = function(inst)
+        inst.sg.statemem.lunge = true
+        inst.sg:GoToState("lunge_pst")
+    end,
+
+    onexit = function(inst)
+        inst.components.combat:SetRange(2)
+        if not inst.sg.statemem.lunge then
+            inst.Physics:CollidesWith(GLOBAL.COLLISION.GIANTS)
+            GLOBAL.ToggleOnCharacterCollisions(inst)
+        end
+    end,
 })

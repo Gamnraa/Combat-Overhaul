@@ -99,7 +99,7 @@ local SPEAR_CHARGE = AddAction("SPEAR_CHARGE", "Spear Charge", function(act)
     return true
 end
 )
-AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.SPEAR_CHARGE, altattackactionhandler_server))
+AddStategraphActionHandler("wilson",        "spear_charge_pre")
 AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.SPEAR_CHARGE, altattackactionhandler_client))
 
 
