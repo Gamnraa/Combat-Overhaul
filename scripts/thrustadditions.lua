@@ -102,7 +102,7 @@ local spear_charge_loop = State({
         inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_nightsword")
         inst.SoundEmitter:PlaySound("dontstarve/impacts/impact_shadow_med_sharp")
         inst.Physics:ClearCollidesWith(GLOBAL.COLLISION.GIANTS)
-        GLOBAL.ToggleOffCharacterCollisions(inst)
+       -- GLOBAL.ToggleOffCharacterCollisions(inst)
 
         if data ~= nil then
             if data.target ~= nil and data.target:IsValid() then
@@ -169,7 +169,7 @@ local spear_charge_loop = State({
         inst.components.combat:SetRange(2)
         if not inst.sg.statemem.lunge then
             inst.Physics:CollidesWith(GLOBAL.COLLISION.GIANTS)
-            GLOBAL.ToggleOnCharacterCollisions(inst)
+          --triggered  GLOBAL.ToggleOnCharacterCollisions(inst)
         end
     end,
 })
@@ -200,7 +200,7 @@ local spear_charge_pst = (State{
 
     onexit = function(inst)
         inst.Physics:CollidesWith(GLOBAL.COLLISION.GIANTS)
-        GLOBAL.ToggleOnCharacterCollisions(inst)
+        --GLOBAL.ToggleOnCharacterCollisions(inst)
     end,
 })
 AddStategraphState("wilson", spear_charge_pst)
