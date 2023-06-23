@@ -91,6 +91,7 @@ local spear_charge_pre = State({
 		end
 	end,
 })
+AddStategraphState("wilson", spear_charge_pre)
 
 local spear_charge_loop = State({
     name = "spear_charge_loop",
@@ -172,3 +173,5 @@ local spear_charge_loop = State({
         end
     end,
 })
+
+AddStategraphState("wilson", spear_charge_loop)
