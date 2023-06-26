@@ -114,9 +114,9 @@ local spear_charge_loop = State({
                 inst:ForceFacePoint(data.targetpos)
             end
         end
-        inst.Physics:SetMotorVelOverride(25, 0, 0)
+        inst.Physics:SetMotorVelOverride(15, 0, 0)
 
-        inst.sg:SetTimeout(12 * FRAMES)
+        inst.sg:SetTimeout(14 * FRAMES)
     end,
 
     onupdate = function(inst)
@@ -126,7 +126,7 @@ local spear_charge_loop = State({
         local target = inst.sg.statemem.target
         
         local pos = inst:GetPosition()
-        local targets = GLOBAL.TheSim:FindEntities(pos.x, pos.y, pos.z, 1, {"_combat", "hostile"}, {"player", "companion"})
+        local targets = GLOBAL.TheSim:FindEntities(pos.x, pos.y, pos.z, 1.5, {"_combat", "hostile"}, {"player", "companion"})
         local weapon = inst.components.combat:GetWeapon()
         for _, v in pairs(targets) do
             print(v)

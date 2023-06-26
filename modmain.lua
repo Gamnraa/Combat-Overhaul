@@ -101,8 +101,7 @@ end
 )
 AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.SPEAR_CHARGE, "spear_charge_pre"))
 AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.SPEAR_CHARGE, altattackactionhandler_client))
-SPEAR_CHARGE.distance = 7
-
+SPEAR_CHARGE.distance = 6
 
 
 local RAPID_SLASH = AddAction("RAPID_SLASH", "Rapid Slash", function(act)
