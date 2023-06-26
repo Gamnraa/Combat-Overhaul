@@ -127,11 +127,12 @@ local spear_charge_loop = State({
         
         local pos = inst:GetPosition()
         local targets = GLOBAL.TheSim:FindEntities(pos.x, pos.y, pos.z, 1, {"_combat", "hostile"}, {"player", "companion"})
-
+        local weapon = inst.components.combat:GetWeapon()
         for _, v in pairs(targets) do
             print(v)
             if not inst.sg.statemem.hittargets[v] then
-                inst.components.combat:DoAttack(v)
+                --inst.components.combat:DoAttack(v)
+                weapon.components.combatalternateattack:OnAttack(inst, v)
                 inst.sg.statemem.hittargets[v] = true
             end
         end
