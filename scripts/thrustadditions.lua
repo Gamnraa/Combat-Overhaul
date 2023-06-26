@@ -132,7 +132,7 @@ local spear_charge_loop = State({
             print(v)
             if not inst.sg.statemem.hittargets[v] then
                 inst.components.combat:DoAttack(v)
-                inst.sg.stateme,.hittargets[v] = true
+                inst.sg.statemem.hittargets[v] = true
             end
         end
     end,
