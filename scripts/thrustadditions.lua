@@ -104,6 +104,8 @@ local spear_charge_loop = State({
         inst.Physics:ClearCollidesWith(GLOBAL.COLLISION.GIANTS)
        -- GLOBAL.ToggleOffCharacterCollisions(inst)
 
+       inst.sg.statemem.hittargets = {}
+
         if data ~= nil then
             if data.target ~= nil and data.target:IsValid() then
                 inst.sg.statemem.target = data.target
@@ -112,9 +114,9 @@ local spear_charge_loop = State({
                 inst:ForceFacePoint(data.targetpos)
             end
         end
-        inst.Physics:SetMotorVelOverride(35, 0, 0)
+        inst.Physics:SetMotorVelOverride(25, 0, 0)
 
-        inst.sg:SetTimeout(8 * FRAMES)
+        inst.sg:SetTimeout(12 * FRAMES)
     end,
 
     onupdate = function(inst)
@@ -122,27 +124,16 @@ local spear_charge_loop = State({
             return
         end
         local target = inst.sg.statemem.target
-        if target == nil or not target:IsValid() then
-            if inst.sg.statemem.animdone then
-                inst.sg.statemem.lunge = true
-                inst.sg:GoToState("lunge_pst")
-                return
-            end
-            inst.sg.statemem.target = nil
-        elseif inst:IsNear(target, 1) then
-            local x, y, z = target.Transform:GetWorldPosition()
-            fx.Transform:SetPosition(x, y + 1.5, z)
-            fx.Transform:SetRotation(inst.Transform:GetRotation())
+        
+        local pos = inst:GetPosition()
+        local targets = GLOBAL.TheSim:FindEntities(pos.x, pos.y, pos.z, 1, {"_combat", "hostile"}, {"player", "companion"})
 
-            inst.components.combat:DoAttack(target)
-            --Drop aggro again here, since we're in i-frames, and we might've
-            --triggered spawners, and they will be initially targeted on me.
-            if inst.sg.statemem.animdone then
-                inst.sg.statemem.lunge = true
-                inst.sg:GoToState("lunge_pst", target)
-                return
+        for _, v in pairs(targets) do
+            print(v)
+            if not inst.sg.statemem.hittargets[v] then
+                inst.components.combat:DoAttack(v)
+                inst.sg.statemen.hittargets[v] = true
             end
-            inst.sg.statemem.attackdone = true
         end
     end,
 
