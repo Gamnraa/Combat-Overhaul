@@ -114,9 +114,9 @@ local spear_charge_loop = State({
                 inst:ForceFacePoint(data.targetpos)
             end
         end
-        inst.Physics:SetMotorVelOverride(15, 0, 0)
+        inst.Physics:SetMotorVelOverride(17, 0, 0)
 
-        inst.sg:SetTimeout(14 * FRAMES)
+        inst.sg:SetTimeout(15 * FRAMES)
     end,
 
     onupdate = function(inst)
