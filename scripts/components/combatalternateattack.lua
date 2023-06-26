@@ -18,6 +18,13 @@ local function thrownaxe_onattack(inst, attacker, target, critmult)
     inst:Remove()
 end
 
+local function thrust_onattack(inst, attacker, target, critmult)
+    local altattack = inst.components.combatalternateattack
+    target.components.combat:GetAttacked(attacker, altattack.damage * critmult, inst)
+
+    if inst.components.finiteuses then inst.components.finiteuses:Use(2) end
+end
+
 local CombatAlternateAttack = Class(function(self, inst)
     self.inst = inst
     self.inst:AddTag("altattack")
@@ -39,6 +46,7 @@ function CombatAlternateAttack:SetWeaponType(weapontype)
         self.critchance = 5
         self.critmult = 2
     elseif weapontype == "thrust" then
+        self.onattack = thrust_onattack
         self.damage = 16
         self.critchange = 20
         self.critmult = 1.25
@@ -94,4 +102,5 @@ function CombatAlternateAttack:ThrowWeapon(attacker, target)
 
     self.inst:Remove()
 end
+
 return CombatAlternateAttack
