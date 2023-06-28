@@ -93,6 +93,43 @@ local spear_charge_pre = State({
 })
 AddStategraphState("wilson", spear_charge_pre)
 
+local spear_charge_pre_client = State({
+    name = "spear_charge_pre",
+    tags = {"attack", "busy"},
+    onenter = function(inst, target)
+        inst.components.locomotor:Stop()
+        inst.AnimState:PlayAnimation("dial_loop")
+        inst.replica.combat:StartAttack()
+
+        if not target then target = inst.replica.combat:GetTarget() end
+
+        if target and target:IsValid() then
+            inst.sg.statemem.target = target
+			inst.sg.statemem.targetpos = target:GetPosition()
+			inst:ForceFacePoint(inst.sg.statemem.targetpos:Get())
+        else
+            target = nil
+        end
+    end,
+
+    onupdate = function(inst)
+        if inst.sg.statemem.target ~= nil then
+            if inst.sg.statemem.target:IsValid() then
+                inst.sg.statemem.targetpos = inst.sg.statemem.target:GetPosition()
+            else
+                inst.sg.statemem.target = nil
+            end
+        end
+    end,
+
+    onexit = function(inst)
+        if inst.sg:HasStateTag("abouttoattack") then
+            inst.replica.combat:CancelAttack()
+        end
+    end,
+})
+AddStategraphState("wilson_client", spear_charge_pre_client)
+
 local spear_charge_loop = State({
     name = "spear_charge_loop",
     tags = {"attack", "busy", "temp_invincible", "autopredict"},
