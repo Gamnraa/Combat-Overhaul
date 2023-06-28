@@ -122,6 +122,16 @@ local spear_charge_pre_client = State({
         end
     end,
 
+    events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg.statemem.lunge = true
+					inst.sg:GoToState("spear_charge_loop", { target = inst.sg.statemem.target, targetpos = inst.sg.statemem.targetpos })
+				end
+			end),
+		},
+
     onexit = function(inst)
         if inst.sg:HasStateTag("abouttoattack") then
             inst.replica.combat:CancelAttack()
@@ -166,7 +176,6 @@ local spear_charge_loop = State({
         local targets = GLOBAL.TheSim:FindEntities(pos.x, pos.y, pos.z, 1.5, {"_combat", "hostile"}, {"player", "companion"})
         local weapon = inst.components.combat:GetWeapon()
         for _, v in pairs(targets) do
-            print(v)
             if not inst.sg.statemem.hittargets[v] then
                 --inst.components.combat:DoAttack(v)
                 weapon.components.combatalternateattack:OnAttack(inst, v)
@@ -204,6 +213,78 @@ local spear_charge_loop = State({
 })
 AddStategraphState("wilson", spear_charge_loop)
 
+local spear_charge_loop_client = (State{
+    name = "spear_charge_loop",
+    tags = {"attack", "busy", "temp_invincible"},
+
+    onenter = function(inst, data)
+          --inst.AnimState:PlayAnimation("lunge_loop") --NOTE: this anim NOT a loop yo
+        inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_nightsword")
+        inst.SoundEmitter:PlaySound("dontstarve/impacts/impact_shadow_med_sharp")
+        inst.Physics:ClearCollidesWith(GLOBAL.COLLISION.GIANTS)
+       -- GLOBAL.ToggleOffCharacterCollisions(inst)
+
+       inst.sg.statemem.hittargets = {}
+
+        if data ~= nil then
+            if data.target ~= nil and data.target:IsValid() then
+                inst.sg.statemem.target = data.target
+                inst:ForceFacePoint(data.target.Transform:GetWorldPosition())
+            elseif data.targetpos ~= nil then
+                inst:ForceFacePoint(data.targetpos)
+            end
+        end
+        inst.Physics:SetMotorVelOverride(17, 0, 0)
+
+        inst.sg:SetTimeout(15 * FRAMES)
+    end,
+    onupdate = function(inst)
+        if inst.sg.statemem.attackdone then
+            return
+        end
+        local target = inst.sg.statemem.target
+        
+        local pos = inst:GetPosition()
+        local targets = GLOBAL.TheSim:FindEntities(pos.x, pos.y, pos.z, 1.5, {"_combat", "hostile"}, {"player", "companion"})
+        local weapon = inst.replica.combat:GetWeapon()
+        for _, v in pairs(targets) do
+            if not inst.sg.statemem.hittargets[v] then
+                --inst.components.combat:DoAttack(v)
+                weapon.components.combatalternateattack:OnAttack(inst, v)
+                inst.sg.statemem.hittargets[v] = true
+            end
+        end
+    end,
+
+    events =
+    {
+        EventHandler("animover", function(inst)
+            if inst.AnimState:AnimDone() then
+                if inst.sg.statemem.attackdone or inst.sg.statemem.target == nil then
+                    inst.sg.statemem.lunge = true
+                    inst.sg:GoToState("lunge_pst", inst.sg.statemem.target)
+                    return
+                end
+                inst.sg.statemem.animdone = true
+            end
+        end),
+    },
+
+    ontimeout = function(inst)
+        inst.sg.statemem.lunge = true
+        inst.sg:GoToState("spear_charge_pst")
+    end,
+
+    onexit = function(inst)
+        --inst.components.combat:SetRange(2)
+        if not inst.sg.statemem.lunge then
+            inst.Physics:CollidesWith(GLOBAL.COLLISION.GIANTS)
+          --triggered  GLOBAL.ToggleOnCharacterCollisions(inst)
+        end
+    end,     
+})
+AddStategraphState("wilson_client", spear_charge_loop_client)
+
 local spear_charge_pst = (State{
     name = "spear_charge_pst",
     tags = { "busy", "noattack", "temp_invincible"},
@@ -233,3 +314,4 @@ local spear_charge_pst = (State{
     end,
 })
 AddStategraphState("wilson", spear_charge_pst)
+AddStategraphState("wilson_client", spear_charge_pst)
