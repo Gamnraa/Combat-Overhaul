@@ -100,7 +100,7 @@ local SPEAR_CHARGE = AddAction("SPEAR_CHARGE", "Spear Charge", function(act)
 end
 )
 AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.SPEAR_CHARGE, "spear_charge_pre"))
-AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.SPEAR_CHARGE, altattackactionhandler_client))
+AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.SPEAR_CHARGE, "spear_charge_pre"))
 SPEAR_CHARGE.distance = 5
 
 
