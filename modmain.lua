@@ -252,3 +252,18 @@ AddSimPostInit(function()
     )
 end
 )
+
+local function spear_charge_rpc(inst)
+    local pos = inst:GetPosition()
+    local targets = GLOBAL.TheSim:FindEntities(pos.x, pos.y, pos.z, 1.5, {"_combat", "hostile"}, {"player", "companion"})
+    local weapon = inst.components.combat:GetWeapon()
+    for _, v in pairs(targets) do
+        if not inst.sg.statemem.hittargets[v] then
+            --inst.components.combat:DoAttack(v)
+            weapon.components.combatalternateattack:OnAttack(inst, v)
+            inst.sg.statemem.hittargets[v] = true
+        end
+    end
+end
+
+AddModRPCHandler("GramSpearChargeRPC", "GramSpearCharge", spear_charge_rpc)
