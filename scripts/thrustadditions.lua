@@ -249,8 +249,7 @@ local spear_charge_loop_client = (State{
         local weapon = inst.replica.combat:GetWeapon()
         for _, v in pairs(targets) do
             if not inst.sg.statemem.hittargets[v] then
-                print("spearthrust")
-                weapon:PushEvent("spearthrust", {attacker = inst, victim = v})
+                SendModRPCToServer(GetModRPC("GramSpearChargeRPC", "GramSpearCharge"), v)
                 inst.sg.statemem.hittargets[v] = true
             end
         end
