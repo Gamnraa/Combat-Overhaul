@@ -178,7 +178,10 @@ local spear_charge_loop = State({
         for _, v in pairs(targets) do
             if not inst.sg.statemem.hittargets[v] then
                 --inst.components.combat:DoAttack(v)
-                weapon.components.combatalternateattack:OnAttack(inst, v)
+                local act = GLOBAL.BufferedAction(inst, v, GLOBAL.ACTIONS.SPEAR_CHARGE, weapon)
+                inst.components.locomotor:SetBufferedAction(act)
+                inst:PerformBufferedAction()
+                --weapon.components.combatalternateattack:OnAttack(inst, v)
                 inst.sg.statemem.hittargets[v] = true
             end
         end
@@ -249,8 +252,10 @@ local spear_charge_loop_client = (State{
         local weapon = inst.replica.combat:GetWeapon()
         for _, v in pairs(targets) do
             if not inst.sg.statemem.hittargets[v] then
+                
+                inst:PerformPreviewBufferedAction()
                 --inst.components.combat:DoAttack(v)
-                weapon.components.combatalternateattack:OnAttack(inst, v)
+                --weapon.components.combatalternateattack:OnAttack(inst, v)
                 inst.sg.statemem.hittargets[v] = true
             end
         end
