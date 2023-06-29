@@ -94,14 +94,13 @@ AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.POWER_S
 
 --NOTE: Might want to change this one to Point Action
 local SPEAR_CHARGE = AddAction("SPEAR_CHARGE", "Spear Charge", function(act)
-    act.doer.components.talker:Say("Chaaaarge!!")
-    act.doer.components.combat:DoAttack(act.target)
+    act.invobject.components.combatalternateattack:OnAttack(act.doer, act.target)
     return true
 end
 )
-AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.SPEAR_CHARGE, altattackactionhandler_server))
-AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.SPEAR_CHARGE, altattackactionhandler_client))
-
+AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.SPEAR_CHARGE, "spear_charge_pre"))
+AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.SPEAR_CHARGE, "spear_charge_pre"))
+SPEAR_CHARGE.distance = 5
 
 
 local RAPID_SLASH = AddAction("RAPID_SLASH", "Rapid Slash", function(act)
@@ -253,3 +252,12 @@ AddSimPostInit(function()
     )
 end
 )
+
+local function spear_charge_rpc(inst, target)
+    local pos = inst:GetPosition()
+    local weapon = inst.components.combat:GetWeapon()
+    weapon.components.combatalternateattack:OnAttack(inst, target)
+
+end
+
+AddModRPCHandler("GramSpearChargeRPC", "GramSpearCharge", spear_charge_rpc)
