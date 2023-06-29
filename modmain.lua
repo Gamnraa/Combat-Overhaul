@@ -94,8 +94,7 @@ AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.POWER_S
 
 --NOTE: Might want to change this one to Point Action
 local SPEAR_CHARGE = AddAction("SPEAR_CHARGE", "Spear Charge", function(act)
-    act.doer.components.talker:Say("Chaaaarge!!")
-    --act.doer.components.combat:DoAttack(act.target)
+    act.invobject.components.combatalternateattack:OnAttack(act.doer, act.target)
     return true
 end
 )
