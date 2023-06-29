@@ -50,6 +50,7 @@ function CombatAlternateAttack:SetWeaponType(weapontype)
         self.damage = 16
         self.critchange = 20
         self.critmult = 1.25
+        self.inst:ListenForEvent("spearthrust", function(inst, data) self:OnAttack(data.attacker, data.victim) end)
     end
 end
 

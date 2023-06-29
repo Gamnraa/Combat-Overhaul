@@ -245,7 +245,15 @@ local spear_charge_loop_client = (State{
         local target = inst.sg.statemem.target
         
         local pos = inst:GetPosition()
-        SendModRPCToServer(GetModRPC("GramSpearChargeRPC", "GramSpearCharge"))
+        targets = GLOBAL.TheSim:FindEntities(pos.x, pos.y, pos.z, 1.5, {"_combat", "hostile"}, {"player", "companion"})
+        local weapon = inst.replica.combat:GetWeapon()
+        for _, v in pairs(targets) do
+            if not inst.sg.statemem.hittargets[v] then
+                print("spearthrust")
+                weapon:PushEvent("spearthrust", {attacker = inst, victim = v})
+                inst.sg.statemem.hittargets[v] = true
+            end
+        end
     end,
 
     events =
