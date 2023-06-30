@@ -32,17 +32,19 @@ local function strongblunt_onattack(inst, attacker, target, critmult)
     --Our radius is just the distance between us and our target
     --So, get the angle the player is facing, then offset that angle by x in both directions
     local hittargets = {}
-    local arc = 30
+    local arc = 20
     local x, y, z = attacker.Transform:GetWorldPosition()
     local angle = attacker.Transform:GetRotation()
-    local radius = 3
+    local radius = 1
+    print(angle)
 
     for i = angle, angle + arc, 1 do
+        print(i)
         local offset_x = x + radius * math.sin(i * DEGREES)
         local offset_z = z + radius * math.cos(i * DEGREES)
 
-        print(x, offset_x, z, offset_z)
-        local ents = TheSim:FindEntities(offset_x, 0, offset_z, 1.5, {"_combat", "hostile"}, {"player", "companion"})
+
+        local ents = TheSim:FindEntities(offset_x, 0, offset_z, 1, {"_combat", "hostile"}, {"player", "companion"})
         for _, v in pairs(ents) do
             if not hittargets[v] then
                 v.components.combat:GetAttacked(attacker, altattack.damage * critmult, inst)
@@ -55,8 +57,7 @@ local function strongblunt_onattack(inst, attacker, target, critmult)
         local offset_z = z + radius * math.sin(i * DEGREES)
         local offset_x = x + radius * math.cos(i * DEGREES)
 
-        print(x, offset_x, z, offset_z)
-        local ents = TheSim:FindEntities(offset_x, 0, offset_z, 1.5, {"_combat", "hostile"}, {"player", "companion"})
+        local ents = TheSim:FindEntities(offset_x, 0, offset_z, 1, {"_combat", "hostile"}, {"player", "companion"})
         for _, v in pairs(ents) do
             if not hittargets[v] then
                 v.components.combat:GetAttacked(attacker, altattack.damage * critmult, inst)
