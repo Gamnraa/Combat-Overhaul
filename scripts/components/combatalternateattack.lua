@@ -34,7 +34,7 @@ local function strongblunt_onattack(inst, attacker, target, critmult)
     local hittargets = {}
     local arc = 30
     local x, y, z = attacker.Transform:GetWorldPosition()
-    local angle = attack.Transform:GetRotation()
+    local angle = attacker.Transform:GetRotation()
     local radius = 3
 
     for i = angle, angle + arc, 1 do
@@ -94,7 +94,7 @@ function CombatAlternateAttack:SetWeaponType(weapontype)
         self.critchange = 20
         self.critmult = 1.25
     elseif weapontype == "strongblunt" then
-        self.onatack = strongblunt_onattack
+        self.onattack = strongblunt_onattack
         self.damage = 45
         self.critchance = 5
         self.critmult = 2
