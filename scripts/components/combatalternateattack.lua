@@ -34,17 +34,17 @@ local function strongblunt_onattack(inst, attacker, target, critmult)
     local hittargets = {}
     local arc = 20
     local x, y, z = attacker.Transform:GetWorldPosition()
-    local angle = attacker.Transform:GetRotation()
+    local angle = attacker.Transform:GetRotation() + 180
     local radius = 1
     print(angle)
 
     for i = angle, angle + arc, 1 do
         print(i)
-        local offset_x = x + radius * math.sin(i * DEGREES)
-        local offset_z = z + radius * math.cos(i * DEGREES)
+        local offset_x = x + radius * math.cos(i * DEGREES)
+        local offset_z = z + radius * math.sin(i * DEGREES)
 
 
-        local ents = TheSim:FindEntities(offset_x, 0, offset_z, 1, {"_combat", "hostile"}, {"player", "companion"})
+        local ents = TheSim:FindEntities(offset_x, 0, offset_z, 1.25, {"_combat", "hostile"}, {"player", "companion"})
         for _, v in pairs(ents) do
             if not hittargets[v] then
                 v.components.combat:GetAttacked(attacker, altattack.damage * critmult, inst)
@@ -54,10 +54,10 @@ local function strongblunt_onattack(inst, attacker, target, critmult)
     end
 
     for i = angle, angle - arc, -1 do
-        local offset_z = z + radius * math.sin(i * DEGREES)
-        local offset_x = x + radius * math.cos(i * DEGREES)
+        local offset_z = z + radius * math.cos(i * DEGREES)
+        local offset_x = x + radius * math.sin(i * DEGREES)
 
-        local ents = TheSim:FindEntities(offset_x, 0, offset_z, 1, {"_combat", "hostile"}, {"player", "companion"})
+        local ents = TheSim:FindEntities(offset_x, 0, offset_z, 1.25, {"_combat", "hostile"}, {"player", "companion"})
         for _, v in pairs(ents) do
             if not hittargets[v] then
                 v.components.combat:GetAttacked(attacker, altattack.damage * critmult, inst)
