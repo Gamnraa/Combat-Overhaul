@@ -25,6 +25,49 @@ local function thrust_onattack(inst, attacker, target, critmult)
     if inst.components.finiteuses then inst.components.finiteuses:Use(2) end
 end
 
+local function strongblunt_onattack(inst, attacker, target, critmult)
+    local altattack = inst.components.combatalternateattack
+    --Bad at geometry bear with me
+    --We want to get all entities in an arc in x degress left from our target, right from our target
+    --Our radius is just the distance between us and our target
+    --So, get the angle the player is facing, then offset that angle by x in both directions
+    local hittargets = {}
+    local arc = 30
+    local x, y, z = attacker.Transform:GetWorldPosition()
+    local angle = attack.Transform:GetRotation()
+    local radius = 3
+
+    for i = angle, angle + arc, 1 do
+        local offset_x = x + radius * math.sin(i * DEGREES)
+        local offset_z = z + radius * math.cos(i * DEGREES)
+
+        print(x, offset_x, z, offset_z)
+        local ents = TheSim:FindEntities(offset_x, 0, offset_z, 1.5, {"_combat", "hostile"}, {"player", "companion"})
+        for _, v in pairs(ents) do
+            if not hittargets[v] then
+                v.components.combat:GetAttacked(attacker, altattack.damage * critmult, inst)
+                hittargets[v] = true
+            end
+        end
+    end
+
+    for i = angle, angle - arc, -1 do
+        local offset_z = z + radius * math.sin(i * DEGREES)
+        local offset_x = x + radius * math.cos(i * DEGREES)
+
+        print(x, offset_x, z, offset_z)
+        local ents = TheSim:FindEntities(offset_x, 0, offset_z, 1.5, {"_combat", "hostile"}, {"player", "companion"})
+        for _, v in pairs(ents) do
+            if not hittargets[v] then
+                v.components.combat:GetAttacked(attacker, altattack.damage * critmult, inst)
+                hittargets[v] = true
+            end
+        end
+    end
+end
+        
+
+
 local CombatAlternateAttack = Class(function(self, inst)
     self.inst = inst
     self.inst:AddTag("altattack")
@@ -43,14 +86,23 @@ function CombatAlternateAttack:SetWeaponType(weapontype)
         self.onattack = thrownaxe_onattack
         self.projectile = "axe_thrown"
         self.damage = 10
-        self.critchance = 5
+        self.critchance = 10
         self.critmult = 2
     elseif weapontype == "thrust" then
         self.onattack = thrust_onattack
         self.damage = 16
         self.critchange = 20
         self.critmult = 1.25
-        self.inst:ListenForEvent("spearthrust", function(inst, data) self:OnAttack(data.attacker, data.victim) end)
+    elseif weapontype == "strongblunt" then
+        self.onatack = strongblunt_onattack
+        self.damage = 45
+        self.critchance = 5
+        self.critmult = 2
+    elseif weapontype == "weakblunt" then
+        self.onattack = weakblunt_onattack
+        self.damage = 30
+        self.critchance = 15
+        self.critmult = 1.34
     end
 end
 
