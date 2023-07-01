@@ -44,10 +44,12 @@ local function strongblunt_onattack(inst, attacker, target, critmult)
         local offset_z = z + radius * math.sin(i * DEGREES)
 
 
-        local ents = TheSim:FindEntities(offset_x, 0, offset_z, 1.25, {"_combat", "hostile"}, {"player", "companion"})
+        local ents = TheSim:FindEntities(offset_x, 0, offset_z, 1.25, {"_combat"}, {"companion"})
         for _, v in pairs(ents) do
             if not hittargets[v] then
                 v.components.combat:GetAttacked(attacker, altattack.damage * critmult, inst)
+                if not v:HasTag("player") then v:PushEvent("gramknockback", {knocker = attacker, radius = 1.7, strength = GRAM_KNOCKBACK_WEIGHTS[target.prefab] or 1.5})
+                else v:PushEvent("knockback", {knocker = attacker, radius = 1.7, strength = 1.25}) end
                 hittargets[v] = true
             end
         end
@@ -57,10 +59,12 @@ local function strongblunt_onattack(inst, attacker, target, critmult)
         local offset_z = z + radius * math.cos(i * DEGREES)
         local offset_x = x + radius * math.sin(i * DEGREES)
 
-        local ents = TheSim:FindEntities(offset_x, 0, offset_z, 1.25, {"_combat", "hostile"}, {"player", "companion"})
+        local ents = TheSim:FindEntities(offset_x, 0, offset_z, 1.25, {"_combat",}, {"companion"})
         for _, v in pairs(ents) do
             if not hittargets[v] then
                 v.components.combat:GetAttacked(attacker, altattack.damage * critmult, inst)
+                if not v:HasTag("player") then v:PushEvent("gramknockback", {knocker = attacker, radius = 1.7, strength = GRAM_KNOCKBACK_WEIGHTS[target.prefab] or 1.5})
+                else v:PushEvent("knockback", {knocker = attacker, radius = 1.7, strength = 1.25}) end
                 hittargets[v] = true
             end
         end
@@ -70,6 +74,8 @@ end
 local function weakblunt_onattack(inst, attacker, target, critmult)
     local altattack = inst.components.combatalternateattack
     target.components.combat:GetAttacked(attacker, altattack.damage * critmult, inst)
+    if not target:HasTag("player") then target:PushEvent("gramknockback", {knocker = attacker, radius = 1.7, strength = GRAM_KNOCKBACK_WEIGHTS[target.prefab] or 1.5})
+    else target:PushEvent("knockback", {knocker = attacker, radius = 1.7, strength = 1.25}) end
 end
 
 

@@ -1,4 +1,11 @@
 --Code modified from baseball_bat_ness_common.lua to be more fitting in different circumstances
+local State = GLOBAL.State
+local FRAMES = GLOBAL.FRAMES
+local TimeEvent = GLOBAL.TimeEvent
+local EventHandler = GLOBAL.EventHandler
+require "stategraphs/commonstates"
+local CommonHandlers = GLOBAL.CommonHandlers
+
 local newAnims = {
 	["spider"] = Asset("ANIM", "anim/spiderknockback.zip"),
 	["hound"] = Asset("ANIM", "anim/houndknockback.zip"),
