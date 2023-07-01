@@ -2,6 +2,7 @@ PrefabFiles = {
     "axeprojectile"
 }
 
+modimport "scripts/gramknockback"
 
 modimport "scripts/throwableaxeadditions"
 modimport "scripts/piercingadditions"
