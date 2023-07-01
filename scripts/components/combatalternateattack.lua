@@ -66,7 +66,11 @@ local function strongblunt_onattack(inst, attacker, target, critmult)
         end
     end
 end
-        
+
+local function weakblunt_onattack(inst, attacker, target, critmult)
+    local altattack = inst.components.combatalternateattack
+    target.components.combat:GetAttacked(attacker, altattack.damage * critmult, inst)
+end
 
 
 local CombatAlternateAttack = Class(function(self, inst)

@@ -83,7 +83,7 @@ AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.HEAVY_S
 
 local POWER_SWING = AddAction("POWER_SWING", "Power Swing", function(act)
     act.doer.components.talker:Say("It's all in the technique!")
-    act.doer.components.combat:DoAttack(act.target)
+    act.invobject.components.combatalternateattack:OnAttack(act.doer, act.target)
     return true
 end
 )
