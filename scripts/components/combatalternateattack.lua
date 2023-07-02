@@ -46,7 +46,7 @@ local function strongblunt_onattack(inst, attacker, target, critmult)
 
         local ents = TheSim:FindEntities(offset_x, 0, offset_z, 1.25, {"_combat"}, {"companion"})
         for _, v in pairs(ents) do
-            if not hittargets[v] then
+            if not (hittargets[v] or v == attacker) then
                 v.components.combat:GetAttacked(attacker, altattack.damage * critmult, inst)
                 if not v:HasTag("player") then v:PushEvent("gramknockback", {knocker = attacker, radius = 1.7, strength = GRAM_KNOCKBACK_WEIGHTS[target.prefab] or 1.5})
                 else v:PushEvent("knockback", {knocker = attacker, radius = 1.7, strength = 1.25}) end
@@ -61,7 +61,7 @@ local function strongblunt_onattack(inst, attacker, target, critmult)
 
         local ents = TheSim:FindEntities(offset_x, 0, offset_z, 1.25, {"_combat",}, {"companion"})
         for _, v in pairs(ents) do
-            if not hittargets[v] then
+            if not (hittargets[v] or v == attacker) then
                 v.components.combat:GetAttacked(attacker, altattack.damage * critmult, inst)
                 if not v:HasTag("player") then v:PushEvent("gramknockback", {knocker = attacker, radius = 1.7, strength = GRAM_KNOCKBACK_WEIGHTS[target.prefab] or 1.5})
                 else v:PushEvent("knockback", {knocker = attacker, radius = 1.7, strength = 1.25}) end
