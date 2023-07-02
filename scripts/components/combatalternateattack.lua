@@ -4,6 +4,7 @@ local function applycomponentdatatoinst(altattack, inst)
     inst.critchance = altattack.critchance
     inst.critmult = altattack.critmult
     inst.onattack = altattack.onattack
+    inst.uses = altattack.uses
 end
 
 local function thrownaxe_onattack(inst, attacker, target, critmult)
@@ -68,7 +69,7 @@ local function strongblunt_onattack(inst, attacker, target, critmult)
         end
     end
 
-    if inst.components.finiteuses then inst.components.finiteuses:Use(10) end
+    if inst.components.finiteuses then inst.components.finiteuses:Use(8) end
 end
 
 local function weakblunt_onattack(inst, attacker, target, critmult)
@@ -76,9 +77,20 @@ local function weakblunt_onattack(inst, attacker, target, critmult)
     target.components.combat:GetAttacked(attacker, altattack.damage * critmult, inst)
     if not target:HasTag("player") then target:PushEvent("gramknockback", {knocker = attacker, radius = 1.7, strength = GRAM_KNOCKBACK_WEIGHTS[target.prefab] or 1.5})
     else target:PushEvent("knockback", {knocker = attacker, radius = 1.7, strength = 1.25}) end
-    if inst.components.finiteuses then inst.components.finiteuses:Use(5) end
+    if inst.components.finiteuses then inst.components.finiteuses:Use(4) end
 end
 
+local function piercing_onattack(inst, attacker, target, critmult)
+    local altattack = inst.components.combatalternateattack
+    target.components.combat:GetAttacked(attacker, altattack.damage * critmult, inst)
+    if inst.components.finiteuses then inst.components.finiteuses:Use(2) end
+end
+
+local function sword_onattack(inst, attacker, target, critmult)
+    local altattack = inst.components.combatalternateattack
+    target.components.combat:GetAttacked(attacker, altattack.damage * critmult, inst)
+    if inst.components.finiteuses then inst.components.finiteuses:Use(2) end
+end
 
 local CombatAlternateAttack = Class(function(self, inst)
     self.inst = inst
@@ -89,6 +101,7 @@ local CombatAlternateAttack = Class(function(self, inst)
     self.critmult = 1.5
     self.projectile = nil
     self.onattack = nil
+    self.uses = 1
  end,
  nil
 )
@@ -100,21 +113,25 @@ function CombatAlternateAttack:SetWeaponType(weapontype)
         self.damage = 10
         self.critchance = 10
         self.critmult = 2
+        self.uses = 3
     elseif weapontype == "thrust" then
         self.onattack = thrust_onattack
         self.damage = 16
         self.critchange = 20
         self.critmult = 1.25
+        self.uses = 2
     elseif weapontype == "strongblunt" then
         self.onattack = strongblunt_onattack
         self.damage = 45
         self.critchance = 5
         self.critmult = 2
+        self.uses = 8
     elseif weapontype == "weakblunt" then
         self.onattack = weakblunt_onattack
         self.damage = 30
         self.critchance = 15
         self.critmult = 1.34
+        self.uses = 4
     end
 end
 
@@ -140,6 +157,10 @@ end
 
 function CombatAlternateAttack:SetOnAttack(fn)
     self.onattack = fn
+end
+
+function CombatAlternateAttack:SetUses(uses)
+    self.uses = uses
 end
 
 function CombatAlternateAttack:OnAttack(attacker, target)
