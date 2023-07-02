@@ -36,10 +36,8 @@ local function strongblunt_onattack(inst, attacker, target, critmult)
     local x, y, z = attacker.Transform:GetWorldPosition()
     local angle = attacker.Transform:GetRotation() + 180
     local radius = 1
-    print(angle)
 
     for i = angle, angle + arc, 1 do
-        print(i)
         local offset_x = x + radius * math.cos(i * DEGREES)
         local offset_z = z + radius * math.sin(i * DEGREES)
 
@@ -69,6 +67,8 @@ local function strongblunt_onattack(inst, attacker, target, critmult)
             end
         end
     end
+
+    if inst.components.finiteuses then inst.components.finiteuses:Use(10) end
 end
 
 local function weakblunt_onattack(inst, attacker, target, critmult)
@@ -76,6 +76,7 @@ local function weakblunt_onattack(inst, attacker, target, critmult)
     target.components.combat:GetAttacked(attacker, altattack.damage * critmult, inst)
     if not target:HasTag("player") then target:PushEvent("gramknockback", {knocker = attacker, radius = 1.7, strength = GRAM_KNOCKBACK_WEIGHTS[target.prefab] or 1.5})
     else target:PushEvent("knockback", {knocker = attacker, radius = 1.7, strength = 1.25}) end
+    if inst.components.finiteuses then inst.components.finiteuses:Use(5) end
 end
 
 
