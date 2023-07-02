@@ -2,6 +2,7 @@ PrefabFiles = {
     "axeprojectile"
 }
 
+modimport "scripts/gramknockback"
 
 modimport "scripts/throwableaxeadditions"
 modimport "scripts/piercingadditions"
@@ -72,7 +73,7 @@ AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.PIERCE,
 
 local HEAVY_SWING = AddAction("HEAVY_SWING", "Heavy Swing", function(act)
     act.doer.components.talker:Say("Let's get into the swing of things!")
-    act.doer.components.combat:DoAttack(act.target)
+    act.invobject.components.combatalternateattack:OnAttack(act.doer, act.target)
     return true
 end
 )
@@ -83,7 +84,7 @@ AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.HEAVY_S
 
 local POWER_SWING = AddAction("POWER_SWING", "Power Swing", function(act)
     act.doer.components.talker:Say("It's all in the technique!")
-    act.doer.components.combat:DoAttack(act.target)
+    act.invobject.components.combatalternateattack:OnAttack(act.doer, act.target)
     return true
 end
 )

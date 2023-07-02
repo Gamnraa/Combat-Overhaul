@@ -25,6 +25,61 @@ local function thrust_onattack(inst, attacker, target, critmult)
     if inst.components.finiteuses then inst.components.finiteuses:Use(2) end
 end
 
+local function strongblunt_onattack(inst, attacker, target, critmult)
+    local altattack = inst.components.combatalternateattack
+    --Bad at geometry bear with me
+    --We want to get all entities in an arc in x degress left from our target, right from our target
+    --Our radius is just the distance between us and our target
+    --So, get the angle the player is facing, then offset that angle by x in both directions
+    local hittargets = {}
+    local arc = 20
+    local x, y, z = attacker.Transform:GetWorldPosition()
+    local angle = attacker.Transform:GetRotation() + 180
+    local radius = 1
+
+    for i = angle, angle + arc, 1 do
+        local offset_x = x + radius * math.cos(i * DEGREES)
+        local offset_z = z + radius * math.sin(i * DEGREES)
+
+
+        local ents = TheSim:FindEntities(offset_x, 0, offset_z, 1.25, {"_combat"}, {"companion"})
+        for _, v in pairs(ents) do
+            if not (hittargets[v] or v == attacker) then
+                v.components.combat:GetAttacked(attacker, altattack.damage * critmult, inst)
+                if not v:HasTag("player") then v:PushEvent("gramknockback", {knocker = attacker, radius = 1.7, strength = GRAM_KNOCKBACK_WEIGHTS[target.prefab] or 1.5})
+                else v:PushEvent("knockback", {knocker = attacker, radius = 1.7, strength = 1.25}) end
+                hittargets[v] = true
+            end
+        end
+    end
+
+    for i = angle, angle - arc, -1 do
+        local offset_z = z + radius * math.cos(i * DEGREES)
+        local offset_x = x + radius * math.sin(i * DEGREES)
+
+        local ents = TheSim:FindEntities(offset_x, 0, offset_z, 1.25, {"_combat",}, {"companion"})
+        for _, v in pairs(ents) do
+            if not (hittargets[v] or v == attacker) then
+                v.components.combat:GetAttacked(attacker, altattack.damage * critmult, inst)
+                if not v:HasTag("player") then v:PushEvent("gramknockback", {knocker = attacker, radius = 1.7, strength = GRAM_KNOCKBACK_WEIGHTS[target.prefab] or 1.5})
+                else v:PushEvent("knockback", {knocker = attacker, radius = 1.7, strength = 1.25}) end
+                hittargets[v] = true
+            end
+        end
+    end
+
+    if inst.components.finiteuses then inst.components.finiteuses:Use(10) end
+end
+
+local function weakblunt_onattack(inst, attacker, target, critmult)
+    local altattack = inst.components.combatalternateattack
+    target.components.combat:GetAttacked(attacker, altattack.damage * critmult, inst)
+    if not target:HasTag("player") then target:PushEvent("gramknockback", {knocker = attacker, radius = 1.7, strength = GRAM_KNOCKBACK_WEIGHTS[target.prefab] or 1.5})
+    else target:PushEvent("knockback", {knocker = attacker, radius = 1.7, strength = 1.25}) end
+    if inst.components.finiteuses then inst.components.finiteuses:Use(5) end
+end
+
+
 local CombatAlternateAttack = Class(function(self, inst)
     self.inst = inst
     self.inst:AddTag("altattack")
@@ -43,14 +98,23 @@ function CombatAlternateAttack:SetWeaponType(weapontype)
         self.onattack = thrownaxe_onattack
         self.projectile = "axe_thrown"
         self.damage = 10
-        self.critchance = 5
+        self.critchance = 10
         self.critmult = 2
     elseif weapontype == "thrust" then
         self.onattack = thrust_onattack
         self.damage = 16
         self.critchange = 20
         self.critmult = 1.25
-        self.inst:ListenForEvent("spearthrust", function(inst, data) self:OnAttack(data.attacker, data.victim) end)
+    elseif weapontype == "strongblunt" then
+        self.onattack = strongblunt_onattack
+        self.damage = 45
+        self.critchance = 5
+        self.critmult = 2
+    elseif weapontype == "weakblunt" then
+        self.onattack = weakblunt_onattack
+        self.damage = 30
+        self.critchance = 15
+        self.critmult = 1.34
     end
 end
 
