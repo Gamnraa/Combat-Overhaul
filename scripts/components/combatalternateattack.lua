@@ -35,12 +35,12 @@ local function strongblunt_onattack(inst, attacker, target, critmult)
     local hittargets = {}
     local arc = 20
     local x, y, z = attacker.Transform:GetWorldPosition()
-    local angle = attacker.Transform:GetRotation() + 180
+    local angle = attacker.Transform:GetRotation()
     local radius = 1
 
     for i = angle, angle + arc, 1 do
         local offset_x = x + radius * math.cos(i * DEGREES)
-        local offset_z = z + radius * math.sin(i * DEGREES)
+        local offset_z = z + -radius * math.sin(i * DEGREES)
 
 
         local ents = TheSim:FindEntities(offset_x, 0, offset_z, 1.25, {"_combat"}, {"companion"})
@@ -55,7 +55,7 @@ local function strongblunt_onattack(inst, attacker, target, critmult)
     end
 
     for i = angle, angle - arc, -1 do
-        local offset_z = z + radius * math.cos(i * DEGREES)
+        local offset_z = z + -radius * math.cos(i * DEGREES)
         local offset_x = x + radius * math.sin(i * DEGREES)
 
         local ents = TheSim:FindEntities(offset_x, 0, offset_z, 1.25, {"_combat",}, {"companion"})
