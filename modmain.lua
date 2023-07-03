@@ -123,7 +123,7 @@ end
 )
 AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.POWER_WHIP, altattackactionhandler_server))
 AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.POWER_WHIP, altattackactionhandler_client))
-POWER_WHIP.distance = 3
+POWER_WHIP.distance = 5
 
 local function candoaltattack(inst, doer, target, actions, right)
     if right and doer.replica.combat and doer.replica.combat:CanTarget(target) and target.replica.combat:CanBeAttacked() then
