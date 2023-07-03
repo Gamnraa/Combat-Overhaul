@@ -117,12 +117,13 @@ AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.RAPID_S
 
 local POWER_WHIP = AddAction("POWER_WHIP", "Power Whip", function(act)
     act.doer.components.talker:Say("Let's whip you into shape!")
-    act.doer.components.combat:DoAttack(act.target)
+    act.invobject.components.combatalternateattack:OnAttack(act.doer, act.target)
     return true
 end
 )
 AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.POWER_WHIP, altattackactionhandler_server))
 AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.POWER_WHIP, altattackactionhandler_client))
+POWER_WHIP.distance = 3
 
 local function candoaltattack(inst, doer, target, actions, right)
     if right and doer.replica.combat and doer.replica.combat:CanTarget(target) and target.replica.combat:CanBeAttacked() then

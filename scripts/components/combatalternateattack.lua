@@ -92,6 +92,49 @@ local function sword_onattack(inst, attacker, target, critmult)
     if inst.components.finiteuses then inst.components.finiteuses:Use(2) end
 end
 
+
+local function whip_onattack(inst, attacker, target, critmult)
+    local altattack = inst.components.combatalternateattack
+    --Bad at geometry bear with me
+    --We want to get all entities in an arc in x degress left from our target, right from our target
+    --Our radius is just the distance between us and our target
+    --So, get the angle the player is facing, then offset that angle by x in both directions
+    local hittargets = {}
+    local arc = 33
+    local x, y, z = attacker.Transform:GetWorldPosition()
+    local angle = attacker.Transform:GetRotation() + 180
+    local radius = 3
+
+    for i = angle, angle + arc, 1 do
+        local offset_x = x + radius * math.cos(i * DEGREES)
+        local offset_z = z + radius * math.sin(i * DEGREES)
+
+
+        local ents = TheSim:FindEntities(offset_x, 0, offset_z, 2, {"_combat"}, {"companion"})
+        for _, v in pairs(ents) do
+            if not (hittargets[v] or v == attacker) then
+                v.components.combat:GetAttacked(attacker, altattack.damage * critmult, inst)
+                hittargets[v] = true
+            end
+        end
+    end
+
+    for i = angle, angle - arc, -1 do
+        local offset_z = z + radius * math.cos(i * DEGREES)
+        local offset_x = x + radius * math.sin(i * DEGREES)
+
+        local ents = TheSim:FindEntities(offset_x, 0, offset_z, 2, {"_combat",}, {"companion"})
+        for _, v in pairs(ents) do
+            if not (hittargets[v] or v == attacker) then
+                v.components.combat:GetAttacked(attacker, altattack.damage * critmult, inst)
+                hittargets[v] = true
+            end
+        end
+    end
+
+    if inst.components.finiteuses then inst.components.finiteuses:Use(8) end
+end
+
 local CombatAlternateAttack = Class(function(self, inst)
     self.inst = inst
     self.inst:AddTag("altattack")
@@ -144,6 +187,13 @@ function CombatAlternateAttack:SetWeaponType(weapontype)
         self.damage = 44
         self.critchance = 10
         self.critmult = 1.66
+        self.uses = 2
+    elseif weapontype == "whip" then
+        self.onattack = whip_onattack
+        self.damage = 33
+        self.critchance = 5
+        self.critmult = 1.2
+        self.uses = 5
     end
 end
 
