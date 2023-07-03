@@ -132,6 +132,18 @@ function CombatAlternateAttack:SetWeaponType(weapontype)
         self.critchance = 15
         self.critmult = 1.34
         self.uses = 4
+    elseif weapontype == "piercing" then
+        self.onattack = piercing_onattack
+        self.damage = 22
+        self.critchance = 20
+        self.critmult = 1.5
+        self.flatdamage = 5
+        self.uses = 3
+    elseif weapontype == "sword" then
+        self.onattack = sword_onattack
+        self.damage = 44
+        self.critchance = 10
+        self.critmult = 1.66
     end
 end
 
@@ -171,8 +183,8 @@ function CombatAlternateAttack:OnAttack(attacker, target)
         self.onattack(self.inst or self, attacker, target, critmult)
     end
 
-    if target.components.heatlh and not target.components.heatlh:IsDead() then
-        target.components.heatlh:DoDelta(-self.flatdamage)
+    if target.components.health and not target.components.health:IsDead() then
+        target.components.health:DoDelta(-self.flatdamage)
     end
 end
 

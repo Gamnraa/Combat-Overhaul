@@ -62,7 +62,7 @@ AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.THROW_A
 
 local PIERCE = AddAction("PIERCE", "Piercing Attack", function(act)
     act.doer.components.talker:Say("Be mine!")
-    act.doer.components.combat:DoAttack(act.target)
+    act.invobject.components.combatalternateattack:OnAttack(act.doer, act.target)
     return true
 end
 )
@@ -106,7 +106,7 @@ SPEAR_CHARGE.distance = 5
 
 local RAPID_SLASH = AddAction("RAPID_SLASH", "Rapid Slash", function(act)
     act.doer.components.talker:Say("A flurry of blows!")
-    act.doer.components.combat:DoAttack(act.target)
+    act.invobject.components.combatalternateattack:OnAttack(act.doer, act.target)
     return true
 end
 )
