@@ -245,8 +245,21 @@ AddSimPostInit(function()
                 
                 local act = GLOBAL.BufferedAction(theplayer, target, ALT_ATTACKS[attack], weapon)
                 --print(theplayer.components.playercontroller.actionbuttonoverride(target))
-                GLOBAL.SendRPCToServer(GLOBAL.RPC.RightClick, act.action.code, x, z, target, 0, false, nil, nil, act.action.mod_name)
-                
+                if not GLOBAL.TheWorld.ismastersim then
+                    if not theplayer.components.playercontroller.locomotor then
+                        if act.action.pre_action_cb then
+                            act.action.pre_action_cb(act)
+                        end
+                        GLOBAL.SendRPCToServer(GLOBAL.RPC.RightClick, act.action.code, x, z, target, theplayer.Transform:GetRotation(), nil, act.action.canforce, false, act.action.mod_name)
+                    elseif theplayer.components.playercontroller:CanLocomote() then
+                        act.preview_cb = function()
+                            theplayer.components.playercontroller.remote_controls[GLOBAL.CONTROL_SECONDARY] = 0
+                            local isreleased = not TheInput:IsControlPressed(GLOBAL.CONTROL_SECONDARY)
+                            GLOBAL.SendRPCToServer(GLOBAL.RPC.RightClick, act.action.code, x, z, target, theplayer.Transform:GetRotation(), isreleased, nil, false, act.action.mod_name)
+                        end
+                    end
+                    
+                end
                 theplayer.components.playercontroller:DoAction(act)
             end
         end
@@ -259,7 +272,6 @@ local function spear_charge_rpc(inst, target)
     local pos = inst:GetPosition()
     local weapon = inst.components.combat:GetWeapon()
     weapon.components.combatalternateattack:OnAttack(inst, target)
-
 end
 
 AddModRPCHandler("GramSpearChargeRPC", "GramSpearCharge", spear_charge_rpc)
