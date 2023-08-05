@@ -6,6 +6,10 @@ local EventHandler = GLOBAL.EventHandler
 require "stategraphs/commonstates"
 local CommonHandlers = GLOBAL.CommonHandlers
 
+Assets = {
+   Asset("ANIM", "anim/gramcombatanimations.zip"),
+}
+
 AddPrefabPostInit("spear", function(inst)
     inst:AddComponent("combatalternateattack")
     inst.components.combatalternateattack:SetWeaponType("thrust")
@@ -51,7 +55,7 @@ local spear_charge_pre = State({
 
     onenter = function(inst, target)
         inst.components.locomotor:Stop()
-        inst.AnimState:PlayAnimation("dial_loop")
+        inst.AnimState:PlayAnimation("spear_charge_pre")
         inst.components.combat:StartAttack()
 
         if not target then target = inst.components.combat.target end
@@ -98,7 +102,7 @@ local spear_charge_pre_client = State({
     tags = {"attack", "busy"},
     onenter = function(inst, target)
         inst.components.locomotor:Stop()
-        inst.AnimState:PlayAnimation("dial_loop")
+        inst.AnimState:PlayAnimation("spear_charge_pre")
         inst.replica.combat:StartAttack()
 
         if not target then target = inst.replica.combat:GetTarget() end
@@ -142,10 +146,10 @@ AddStategraphState("wilson_client", spear_charge_pre_client)
 
 local spear_charge_loop = State({
     name = "spear_charge_loop",
-    tags = {"attack", "busy", "temp_invincible", "autopredict"},
+    tags = {"attack", "busy", "temp_invincible"},
 
     onenter = function(inst, data)
-        --inst.AnimState:PlayAnimation("lunge_loop") --NOTE: this anim NOT a loop yo
+        inst.AnimState:PlayAnimation("spear_charge_loop", true) 
         inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_nightsword")
         inst.SoundEmitter:PlaySound("dontstarve/impacts/impact_shadow_med_sharp")
         inst.Physics:ClearCollidesWith(GLOBAL.COLLISION.GIANTS)
@@ -163,7 +167,7 @@ local spear_charge_loop = State({
         end
         inst.Physics:SetMotorVelOverride(17, 0, 0)
 
-        inst.sg:SetTimeout(15 * FRAMES)
+        inst.sg:SetTimeout(18 * FRAMES)
     end,
 
     onupdate = function(inst)
@@ -173,7 +177,7 @@ local spear_charge_loop = State({
         local target = inst.sg.statemem.target
         
         local pos = inst:GetPosition()
-        local targets = GLOBAL.TheSim:FindEntities(pos.x, pos.y, pos.z, 1.5, {"_combat", "hostile"}, {"player", "companion"})
+        local targets = GLOBAL.TheSim:FindEntities(pos.x, pos.y, pos.z, 1.8, {"_combat"}, {"player", "companion"})
         local weapon = inst.components.combat:GetWeapon()
         for _, v in pairs(targets) do
             if not inst.sg.statemem.hittargets[v] then
@@ -218,7 +222,7 @@ local spear_charge_loop_client = (State{
     tags = {"attack", "busy", "temp_invincible"},
 
     onenter = function(inst, data)
-          --inst.AnimState:PlayAnimation("lunge_loop") --NOTE: this anim NOT a loop yo
+        inst.AnimState:PlayAnimation("spear_charge_loop", true) 
         inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_nightsword")
         inst.SoundEmitter:PlaySound("dontstarve/impacts/impact_shadow_med_sharp")
         inst.Physics:ClearCollidesWith(GLOBAL.COLLISION.GIANTS)
@@ -261,7 +265,7 @@ local spear_charge_loop_client = (State{
             if inst.AnimState:AnimDone() then
                 if inst.sg.statemem.attackdone or inst.sg.statemem.target == nil then
                     inst.sg.statemem.lunge = true
-                    inst.sg:GoToState("lunge_pst", inst.sg.statemem.target)
+                    inst.sg:GoToState("spear_charge_pst", inst.sg.statemem.target)
                     return
                 end
                 inst.sg.statemem.animdone = true
@@ -286,10 +290,10 @@ AddStategraphState("wilson_client", spear_charge_loop_client)
 
 local spear_charge_pst = (State{
     name = "spear_charge_pst",
-    tags = { "busy", "noattack", "temp_invincible"},
+    tags = { "busy", "noattack"},
 
     onenter = function(inst, target)
-        inst.AnimState:PlayAnimation("dial_loop")
+        inst.AnimState:PlayAnimation("spear_charge_pst")
         inst.Physics:SetMotorVelOverride(12, 0, 0)
         inst.sg.statemem.target = target
     end,
