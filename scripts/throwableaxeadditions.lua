@@ -77,8 +77,8 @@ local throw_axe = State({
         end),
 
         TimeEvent(21 * FRAMES, function(inst)
-            local equip = inst.components.inventory:GetEquippedItem(GLOBAL.EQUIPSLOTS.HANDS)
-            equip.components.combatalternateattack.OnAttack(inst, inst.sg.statemem.attacktarget)
+            inst:PerformBufferedAction()
+            inst.sg:RemoveStateTag("abouttoattack")
         end)
     },
 
