@@ -49,7 +49,6 @@ local function altattackactionhandler_client(inst, action)
 end
 
 local THROW_AXE = AddAction("THROW_AXE", "Throw Axe", function(act)
-    act.doer.components.talker:Say("Happy Labor Day!")
     act.invobject.components.combatalternateattack:ThrowWeapon(act.doer, act.target)
     return true
 end

@@ -61,7 +61,7 @@ local throw_axe = State({
         inst.components.locomotor:Stop()
         inst.AnimState:PlayAnimation("axe_throw") 
 
-        inst.sg:SetTimeout(26 * FRAMES, inst.components.combat.min_attack_period)
+        inst.sg:SetTimeout(28 * FRAMES, inst.components.combat.min_attack_period)
         if target ~= nil and target:IsValid() then
             inst:FacePoint(target.Transform:GetWorldPosition())
             inst.sg.statemem.attacktarget = target
@@ -72,11 +72,11 @@ local throw_axe = State({
 
     timeline = 
     {
-        TimeEvent(20 * FRAMES, function(inst)
+        TimeEvent(18 * FRAMES, function(inst)
             inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_weapon")
         end),
 
-        TimeEvent(21 * FRAMES, function(inst)
+        TimeEvent(19 * FRAMES, function(inst)
             inst:PerformBufferedAction()
             inst.sg:RemoveStateTag("abouttoattack")
         end)
