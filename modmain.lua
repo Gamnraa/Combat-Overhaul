@@ -55,7 +55,7 @@ local THROW_AXE = AddAction("THROW_AXE", "Throw Axe", function(act)
 end
 )
 THROW_AXE.distance = 10
-AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.THROW_AXE, altattackactionhandler_server))
+AddStategraphActionHandler("wilson",        ActionHandler(GLOBAL.ACTIONS.THROW_AXE, "throw_axe"))
 AddStategraphActionHandler("wilson_client", ActionHandler(GLOBAL.ACTIONS.THROW_AXE, altattackactionhandler_client))
 
 
