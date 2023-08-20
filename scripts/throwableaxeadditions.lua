@@ -89,8 +89,8 @@ local throw_axe = State({
 
     events = 
     {
-        EventHandler("equip", function(inst) inst.sg:GoToState("idle") end),
-        EventHandler("unequip", function(inst) inst.sg:GoToState("idle") end),
+        --EventHandler("equip", function(inst) inst.sg:GoToState("idle") end),
+        --EventHandler("unequip", function(inst) inst.sg:GoToState("idle") end),
         EventHandler("animqueueover", function(inst)
             if inst.AnimState:AnimDone() then
                 inst.sg:GoToState("idle")
