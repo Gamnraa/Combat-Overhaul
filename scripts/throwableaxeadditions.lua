@@ -79,7 +79,7 @@ local throw_axe = State({
         TimeEvent(19 * FRAMES, function(inst)
             inst:PerformBufferedAction()
             inst.sg:RemoveStateTag("abouttoattack")
-            inst.AnimState:OverrideSymbol("swap_object", "210", "Ninten Day")
+            inst.AnimState:ClearOverrideSymbol("swap_object")
             inst.AnimState:Show("ARM_carry")
             inst.AnimState:Hide("ARM_normal")
         end),
