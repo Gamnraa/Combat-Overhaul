@@ -61,7 +61,7 @@ local throw_axe = State({
         inst.components.locomotor:Stop()
         inst.AnimState:PlayAnimation("axe_throw") 
 
-        inst.sg:SetTimeout(28 * FRAMES, inst.components.combat.min_attack_period)
+        inst.sg:SetTimeout(math.max(28 * FRAMES, inst.components.combat.min_attack_period))
         if target ~= nil and target:IsValid() then
             inst:FacePoint(target.Transform:GetWorldPosition())
             inst.sg.statemem.attacktarget = target
@@ -77,7 +77,9 @@ local throw_axe = State({
         end),
 
         TimeEvent(19 * FRAMES, function(inst)
-            inst:PerformBufferedAction()
+            if inst:PerformBufferedAction() then
+                inst.sg.statemem.thrown = true
+            end
             inst.sg:RemoveStateTag("abouttoattack")
             inst.AnimState:ClearOverrideSymbol("swap_object")
             inst.AnimState:Show("ARM_carry")
@@ -114,3 +116,74 @@ local throw_axe = State({
     end,
 })
 AddStategraphState("wilson", throw_axe)
+
+
+local throw_axe_client = State({
+    name = "throw_axe",
+    tags = { "attack", "notalking", "abouttoattack" },
+
+    onenter = function(inst)
+        local combat = inst.replica.combat
+        if combat:InCooldown() then
+            inst.sg:RemoveStateTag("abouttoattack")
+            inst:ClearBufferedAction()
+            inst.sg:GoToState("idle", true)
+            return
+        end
+
+        combat:StartAttack()
+        inst.sg:SetTimeout(math.max(28 * FRAMES, inst.components.combat.min_attack_period))
+        inst.components.locomotor:Stop()
+
+        inst.AnimState:PlayAnimation("axe_throw")
+
+        local buffaction = inst:GetBufferedAction()
+            if buffaction ~= nil then
+                inst:PerformPreviewBufferedAction()
+
+                if buffaction.target ~= nil and buffaction.target:IsValid() then
+                    inst:FacePoint(buffaction.target:GetPosition())
+                    inst.sg.statemem.attacktarget = buffaction.target
+                    inst.sg.statemem.retarget = buffaction.target
+                end
+            end
+        end,
+
+    timeline =
+    {
+        TimeEvent(19 * FRAMES, function(inst)
+            inst:ClearBufferedAction()
+            inst.sg:RemoveStateTag("abouttoattack")
+            inst.AnimState:ClearOverrideSymbol("swap_object")
+            inst.AnimState:Show("ARM_carry")
+            inst.AnimState:Hide("ARM_normal")
+        end),
+
+        TimeEvent(28 * FRAMES, function(inst)
+            inst.AnimState:Hide("ARM_carry")
+            inst.AnimState:Show("ARM_normal")
+        end)
+    },
+
+    ontimeout = function(inst)
+        inst.sg:RemoveStateTag("attack")
+        inst.sg:AddStateTag("idle")
+    end,
+
+    events =
+    {
+		EventHandler("animqueueover", function(inst)
+            if inst.AnimState:AnimDone() then
+                inst.sg:GoToState("idle")
+            end
+        end),
+    },
+
+    onexit = function(inst)
+		if inst.sg:HasStateTag("abouttoattack") then
+            inst.replica.combat:CancelAttack()
+        end
+    end,
+})
+
+AddStategraphState("wilson_client", throw_axe_client)
