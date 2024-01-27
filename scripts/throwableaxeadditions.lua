@@ -132,9 +132,8 @@ local throw_axe_client = State({
         end
 
         combat:StartAttack()
-        inst.sg:SetTimeout(math.max(28 * FRAMES, inst.components.combat.min_attack_period))
+        inst.sg:SetTimeout(math.max(28 * FRAMES, combat:MinAttackPeriod()))
         inst.components.locomotor:Stop()
-
         inst.AnimState:PlayAnimation("axe_throw")
 
         local buffaction = inst:GetBufferedAction()
